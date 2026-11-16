@@ -230,6 +230,9 @@ What this does not do:
 - The key itself is only ever sent to the LLM provider. No endpoint returns it, and provider error details stay in the
   server log instead of the HTTP response.
 
+Deploying (Coolify, Dockerfile build pack): see [docs/DEPLOY.md](docs/DEPLOY.md). It lists every environment
+variable, the volume, the single-replica rule and how to get the hourly access code.
+
 Tests and lint:
 
 ```bash
