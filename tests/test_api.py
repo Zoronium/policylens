@@ -4,7 +4,7 @@ from app import main
 from app.llm import LLMNotConfigured
 from tests.conftest import PAGES, StubLLM, good_reply
 
-TEXT = "\n--- Page 2 ---\n".join(PAGES)
+TEXT = "--- Page 1 ---\n" + PAGES[0] + "\n--- Page 2 ---\n" + PAGES[1]
 
 
 def test_post_then_get_round_trip(client, monkeypatch):
@@ -23,6 +23,7 @@ def test_low_confidence_fields_are_listed_for_review(client, monkeypatch):
     reply["co_pay_pct"]["confidence"] = 0.4
     monkeypatch.setattr(main, "get_llm", lambda: StubLLM(reply))
     body = client.post("/policies", data={"text": TEXT}).json()
+    assert body["needs_human_review"] is True
     assert "co_pay_pct" in body["review_fields"]
     assert body["coverage"]["co_pay_pct"]["needs_review"] is True
     assert body["coverage"]["sum_insured"]["needs_review"] is False

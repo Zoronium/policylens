@@ -51,7 +51,8 @@ def _norm(s: str) -> str:
 def quote_on_page(quote: str | None, page: int | None, pages: list[str]) -> bool:
     if not quote or not page or page > len(pages):
         return False
-    return _norm(quote) in _norm(pages[page - 1])
+    # pad with spaces so "10" cannot match inside "100"
+    return f" {_norm(quote)} " in f" {_norm(pages[page - 1])} "
 
 
 def _parse_json(raw: str) -> dict:

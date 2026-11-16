@@ -65,7 +65,10 @@ def test_quote_matching_ignores_case_and_punctuation():
 
 
 def test_split_pages_on_markers_and_form_feed():
-    assert split_pages("intro\n--- Page 1 ---\nA\n--- Page 2 ---\nB") == ["intro", "A", "B"]
+    assert split_pages("intro\n--- Page 1 ---\nA\n--- Page 2 ---\nB") == [
+        "intro\n\nA",
+        "B",
+    ]  # title block joins page 1
     assert split_pages("A\fB") == ["A", "B"]
     assert split_pages("just one page") == ["just one page"]
 

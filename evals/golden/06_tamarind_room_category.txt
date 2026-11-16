@@ -1,0 +1,24 @@
+SYNTHETIC DOCUMENT - written for PolicyLens evaluation. Fictional insurer, fictional product.
+
+TAMARIND HEALTH (fictional)
+Customer Information Sheet - Comfort Plan
+
+--- Page 1 ---
+1. Sum Insured: Rs. 15,00,000
+2. Accommodation: Single private AC room. If you pick a higher category, the extra cost is yours.
+3. Intensive care: Covered at the ICU category of the hospital, as per the room entitlement.
+4. Co-payment: nil
+5. Deductible: none
+6. Hospital choice: any hospital in India; cashless is offered at network hospitals only, reimbursement elsewhere.
+
+--- Page 2 ---
+7. Time limits before cover begins
+   Initial period: 30 days.
+   Existing medical conditions: 24 months.
+   Certain listed conditions (cataract, hernia, hydrocele, sinusitis): 12 months.
+8. Treatment limits
+   Cataract: Rs. 45,000 per eye.
+   Hernia repair: Rs. 70,000.
+
+--- Page 3 ---
+9. Not covered: cosmetic surgery; obesity treatment; sleep disorders; congenital external diseases; refractive error correction below 7.5 dioptres.

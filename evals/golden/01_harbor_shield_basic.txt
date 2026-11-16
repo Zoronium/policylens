@@ -1,0 +1,31 @@
+SYNTHETIC DOCUMENT - written for the PolicyLens demo. Fictional insurer, fictional product.
+
+HARBOR SHIELD GENERAL INSURANCE (fictional)
+CUSTOMER INFORMATION SHEET - Care Basic Individual Plan
+
+--- Page 1 ---
+1. Product name: Care Basic Individual
+2. Type of policy: Individual indemnity health insurance
+3. Sum insured: Rs. 5,00,000 per policy year
+4. Coverage basis: Hospitalisation for 24 hours or more, plus 60 days pre-hospitalisation and 90 days post-hospitalisation.
+5. Room rent: Room rent is limited to 1% of the sum insured per day. ICU charges are limited to 2% of the sum insured per day.
+6. Proportionate deduction applies to room-linked charges when the room chosen is costlier than the limit above.
+7. Co-payment: You pay 10% of every admissible claim. The insurer pays the rest.
+8. Deductible: There is no deductible under this plan.
+
+--- Page 2 ---
+9. Waiting periods
+   a. Initial waiting period: 30 days from the policy start date. Illness claims within this period are not payable, except accidents.
+   b. Pre-existing diseases: 36 months of continuous coverage.
+   c. Specific illnesses: cataract, hernia and joint replacement are covered only after 24 months of continuous coverage.
+10. Sub-limits per policy year: Cataract surgery is limited to Rs. 40,000 per eye. Knee replacement is limited to Rs. 1,50,000.
+11. Network: Cashless treatment is available at network hospitals. Treatment at non-network hospitals is reimbursed as above.
+
+--- Page 3 ---
+12. Permanent exclusions
+   - Cosmetic or plastic surgery for appearance
+   - Infertility treatment
+   - Dental treatment unless due to an accident
+   - Obesity or weight-control surgery
+   - Treatment arising from war or nuclear risk
+13. Grievance: write to the grievance cell of the insurer. This sheet is a summary; the policy wording prevails.

@@ -1,0 +1,23 @@
+SYNTHETIC DOCUMENT - written for PolicyLens evaluation. Fictional insurer, fictional product.
+
+ORCHID INDEMNITY COMPANY (fictional)
+Customer Information Sheet - Super Top-up
+
+--- Page 1 ---
+Feature                  | Detail
+-------------------------|---------------------------------------------
+Sum insured              | Rs. 5,00,000
+Deductible               | Rs. 3,00,000 per claim, to be borne by you or your base policy
+Room rent limit          | No limit. Any room category is allowed.
+ICU limit                | No limit
+Co-payment               | Nil
+Network hospitals only   | No
+
+--- Page 2 ---
+Feature                  | Detail
+-------------------------|---------------------------------------------
+Initial waiting period   | 30 days
+Pre-existing diseases    | 36 months
+Specific diseases        | Hernia 24 months; piles 24 months; cataract 24 months
+Sub-limits               | None
+Exclusions               | Cosmetic surgery; dental treatment (non-accidental); stem cell therapy; non-allopathic treatment; maternity

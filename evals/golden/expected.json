@@ -1,0 +1,193 @@
+{
+  "_comment": "Hand-labelled. null = not stated / no numeric cap. co_pay_pct and deductible: null and 0 score the same. Caps are per day.",
+  "01_harbor_shield_basic": {
+    "sum_insured": 500000,
+    "room_rent_cap": {"kind": "pct_si", "amount": 1},
+    "icu_cap": {"kind": "pct_si", "amount": 2},
+    "co_pay_pct": 10,
+    "deductible": null,
+    "initial_days": 30,
+    "pre_existing_months": 36,
+    "network_only": false,
+    "sub_limits": [
+      {"procedure": "cataract surgery", "limit": 40000},
+      {"procedure": "knee replacement", "limit": 150000}
+    ],
+    "specific_illness": [
+      {"illness": "cataract", "months": 24},
+      {"illness": "hernia", "months": 24},
+      {"illness": "joint replacement", "months": 24}
+    ],
+    "exclusions": ["cosmetic surgery", "infertility treatment", "dental treatment", "obesity surgery", "war or nuclear risk"]
+  },
+  "02_lakeview_family_floater": {
+    "sum_insured": 1000000,
+    "room_rent_cap": {"kind": "flat", "amount": 6000},
+    "icu_cap": {"kind": "flat", "amount": 12000},
+    "co_pay_pct": null,
+    "deductible": 25000,
+    "initial_days": 15,
+    "pre_existing_months": 24,
+    "network_only": false,
+    "sub_limits": [
+      {"procedure": "cataract", "limit": 35000},
+      {"procedure": "maternity complications", "limit": 75000}
+    ],
+    "specific_illness": [
+      {"illness": "hysterectomy", "months": 24},
+      {"illness": "kidney stone", "months": 24},
+      {"illness": "hernia", "months": 12}
+    ],
+    "exclusions": ["cosmetic surgery", "self-inflicted injury", "adventure sports injuries", "hearing aids and spectacles", "experimental treatment"]
+  },
+  "03_cedar_network_saver": {
+    "sum_insured": 300000,
+    "room_rent_cap": {"kind": "flat", "amount": 3000},
+    "icu_cap": {"kind": "flat", "amount": 5000},
+    "co_pay_pct": null,
+    "deductible": 10000,
+    "initial_days": 45,
+    "pre_existing_months": 48,
+    "network_only": true,
+    "sub_limits": [
+      {"procedure": "appendectomy", "limit": 60000},
+      {"procedure": "cataract", "limit": 30000},
+      {"procedure": "normal delivery", "limit": 35000}
+    ],
+    "specific_illness": [
+      {"illness": "cataract", "months": 24},
+      {"illness": "hernia", "months": 24},
+      {"illness": "piles", "months": 24},
+      {"illness": "sinusitis", "months": 24}
+    ],
+    "exclusions": ["cosmetic surgery", "infertility and ivf", "obesity treatment", "spectacles and hearing aids", "alternative medicine", "adventure sports injury"]
+  },
+  "04_sapphire_senior_care": {
+    "sum_insured": 750000,
+    "room_rent_cap": {"kind": "pct_si", "amount": 2},
+    "icu_cap": null,
+    "co_pay_pct": 20,
+    "deductible": null,
+    "initial_days": 30,
+    "pre_existing_months": 24,
+    "network_only": false,
+    "sub_limits": [],
+    "specific_illness": [
+      {"illness": "cataract", "months": 24},
+      {"illness": "glaucoma", "months": 24},
+      {"illness": "knee replacement", "months": 24}
+    ],
+    "exclusions": ["cosmetic surgery", "treatment outside india", "hormone replacement therapy", "investigation and evaluation only", "hazardous sports injury"]
+  },
+  "05_orchid_super_topup": {
+    "sum_insured": 500000,
+    "room_rent_cap": null,
+    "icu_cap": null,
+    "co_pay_pct": null,
+    "deductible": 300000,
+    "initial_days": 30,
+    "pre_existing_months": 36,
+    "network_only": false,
+    "sub_limits": [],
+    "specific_illness": [
+      {"illness": "hernia", "months": 24},
+      {"illness": "piles", "months": 24},
+      {"illness": "cataract", "months": 24}
+    ],
+    "exclusions": ["cosmetic surgery", "dental treatment", "stem cell therapy", "non-allopathic treatment", "maternity"]
+  },
+  "06_tamarind_room_category": {
+    "sum_insured": 1500000,
+    "room_rent_cap": null,
+    "icu_cap": null,
+    "co_pay_pct": null,
+    "deductible": null,
+    "initial_days": 30,
+    "pre_existing_months": 24,
+    "network_only": false,
+    "sub_limits": [
+      {"procedure": "cataract", "limit": 45000},
+      {"procedure": "hernia repair", "limit": 70000}
+    ],
+    "specific_illness": [
+      {"illness": "cataract", "months": 12},
+      {"illness": "hernia", "months": 12},
+      {"illness": "hydrocele", "months": 12},
+      {"illness": "sinusitis", "months": 12}
+    ],
+    "exclusions": ["cosmetic surgery", "obesity treatment", "sleep disorders", "congenital external diseases", "refractive error correction"]
+  },
+  "07_juniper_maternity": {
+    "sum_insured": 10000000,
+    "room_rent_cap": {"kind": "flat", "amount": 8000},
+    "icu_cap": {"kind": "flat", "amount": 15000},
+    "co_pay_pct": 5,
+    "deductible": 10000,
+    "initial_days": 90,
+    "pre_existing_months": 36,
+    "network_only": true,
+    "sub_limits": [
+      {"procedure": "normal delivery", "limit": 50000},
+      {"procedure": "caesarean section", "limit": 80000}
+    ],
+    "specific_illness": [
+      {"illness": "joint replacement", "months": 48},
+      {"illness": "spine surgery", "months": 48},
+      {"illness": "cataract", "months": 24}
+    ],
+    "exclusions": ["war and nuclear risks", "cosmetic treatments", "alcoholism or drug abuse treatment", "non-medical items"]
+  },
+  "08_willow_flexi": {
+    "sum_insured": 500000,
+    "room_rent_cap": {"kind": "flat", "amount": 4000},
+    "icu_cap": {"kind": "flat", "amount": 8000},
+    "co_pay_pct": 15,
+    "deductible": 2000,
+    "initial_days": 30,
+    "pre_existing_months": 48,
+    "network_only": false,
+    "sub_limits": [
+      {"procedure": "dialysis", "limit": 2500}
+    ],
+    "specific_illness": [
+      {"illness": "ent disorders", "months": 24},
+      {"illness": "hernia", "months": 24},
+      {"illness": "hysterectomy", "months": 24},
+      {"illness": "varicose veins", "months": 24}
+    ],
+    "exclusions": ["injury due to criminal acts", "cosmetic surgery", "gender change treatment", "vitamins and tonics"]
+  },
+  "09_banyan_narrative": {
+    "sum_insured": 400000,
+    "room_rent_cap": {"kind": "flat", "amount": 3500},
+    "icu_cap": {"kind": "flat", "amount": 7000},
+    "co_pay_pct": 10,
+    "deductible": 5000,
+    "initial_days": 30,
+    "pre_existing_months": 48,
+    "network_only": false,
+    "sub_limits": [
+      {"procedure": "cataract surgery", "limit": 35000},
+      {"procedure": "appendix removal", "limit": 50000}
+    ],
+    "specific_illness": [
+      {"illness": "hernia", "months": 24},
+      {"illness": "cataract", "months": 24},
+      {"illness": "piles", "months": 24}
+    ],
+    "exclusions": ["cosmetic surgery", "infertility treatment", "dental treatment", "sexually transmitted infections other than hiv"]
+  },
+  "10_aspen_compact": {
+    "sum_insured": 200000,
+    "room_rent_cap": null,
+    "icu_cap": null,
+    "co_pay_pct": 25,
+    "deductible": 5000,
+    "initial_days": 60,
+    "pre_existing_months": 24,
+    "network_only": null,
+    "sub_limits": [],
+    "specific_illness": [],
+    "exclusions": ["cosmetic surgery", "infertility treatment", "spectacles"]
+  }
+}

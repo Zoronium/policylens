@@ -4,17 +4,21 @@ import re
 
 import pymupdf
 
-# Pasted text and samples mark pages with a line like "--- Page 2 ---" (or a form feed).
-_PAGE_MARK = re.compile(r"^\s*-{2,}\s*page\s+\d+\s*-{2,}\s*$|\f", re.IGNORECASE | re.MULTILINE)
+# Pasted text and samples mark pages with a line like "--- Page 2 ---", or use form feeds.
+_PAGE_LINE = re.compile(
+    r"^[ \t]*-{2,}[ \t]*page[ \t]+\d+[ \t]*-{2,}[ \t]*$", re.IGNORECASE | re.MULTILINE
+)
 
 
 def split_pages(text: str) -> list[str]:
-    pages = [p.strip() for p in _PAGE_MARK.split(text)]
-    pages = [p for p in pages if p]
-    return pages or [text.strip()]
+    """Markers number the pages; a title block before "Page 1" belongs to page 1."""
+    if _PAGE_LINE.search(text):
+        head, *rest = _PAGE_LINE.split(text)
+        rest[0] = f"{head.strip()}\n{rest[0]}"
+        return [p.strip() for p in rest]
+    return [p.strip() for p in text.split("\f")]
 
 
 def pdf_pages(data: bytes) -> list[str]:
     with pymupdf.open(stream=data, filetype="pdf") as doc:
-        pages = [page.get_text().strip() for page in doc]
-    return pages
+        return [page.get_text().strip() for page in doc]

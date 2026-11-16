@@ -1,0 +1,11 @@
+SYNTHETIC DOCUMENT - written for PolicyLens evaluation. Fictional insurer, fictional product.
+
+ASPEN HEALTH (fictional) - Compact Cover, key facts
+
+--- Page 1 ---
+Cover (sum insured): Rs. 2,00,000
+You pay: 25% of each claim (co-payment) and the first Rs. 5,000 of each claim (deductible).
+We pay hospital bills for stays of more than 24 hours.
+First 60 days of the policy: no claims for illness.
+Existing conditions: 24 months.
+Not covered: cosmetic surgery, infertility treatment, spectacles.

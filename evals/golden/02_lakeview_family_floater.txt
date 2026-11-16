@@ -1,0 +1,30 @@
+SYNTHETIC DOCUMENT - written for the PolicyLens demo. Fictional insurer, fictional product.
+
+LAKEVIEW MUTUAL HEALTH (fictional)
+CUSTOMER INFORMATION SHEET - Family Plus Floater
+
+--- Page 1 ---
+Section A. Cover
+Sum Insured: Rs. 10 lakh on a family floater basis.
+Room rent: Up to Rs. 6,000 per day for a single private room. No proportionate deduction is applied to pharmacy or diagnostics.
+ICU / ICCU: Up to Rs. 12,000 per day.
+Co-payment: 20% co-payment applies to claims for insured persons aged 60 years and above, and to all claims at non-network hospitals.
+Deductible: Rs. 25,000 per claim. The insurer pays only the amount above the deductible.
+
+--- Page 2 ---
+Section B. Waiting periods
+Initial waiting period: 15 days.
+Pre-existing conditions are covered after 24 months.
+Specific waiting periods: hysterectomy 24 months; kidney stone 24 months; hernia 12 months.
+Section C. Limits on specific treatments
+Cataract: Rs. 35,000 per eye. Maternity-related complications: Rs. 75,000.
+
+--- Page 3 ---
+Section D. Not covered
+1. Cosmetic surgery
+2. Self-inflicted injury
+3. Adventure sports injuries
+4. Hearing aids and spectacles
+5. Experimental treatment
+Section E. Hospitals
+Cover applies at any hospital registered in India. A network hospital list is available on request.

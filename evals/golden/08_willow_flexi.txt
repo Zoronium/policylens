@@ -1,0 +1,23 @@
+SYNTHETIC DOCUMENT - written for PolicyLens evaluation. Fictional insurer, fictional product.
+
+WILLOW GENERAL (fictional)
+Customer Information Sheet - Flexi Plan
+
+--- Page 1 ---
+Sum insured options available at purchase: Rs. 3,00,000 / Rs. 5,00,000 / Rs. 10,00,000.
+Your policy schedule shows the option you chose: Rs. 5,00,000.
+Room rent: Rs. 4,000 per day. (The Rs. 6,000 limit shown in our brochure applies only to the Premier variant, not to this plan.)
+ICU: Rs. 8,000 per day.
+Co-payment: 15% of the admissible claim amount.
+Deductible: Rs. 2,000 per claim.
+
+--- Page 2 ---
+Waiting periods:
+Initial waiting period: 30 days.
+Pre-existing diseases: 48 months.
+Specific waiting period of 24 months: ENT disorders, hernia, hysterectomy, varicose veins.
+Limits: Dialysis: Rs. 2,500 per session.
+Cashless claims need prior approval. You may use any hospital.
+
+--- Page 3 ---
+General exclusions: injury due to criminal acts; cosmetic surgery; change of gender treatments; cost of vitamins and tonics unless part of treatment.

@@ -1,0 +1,28 @@
+SYNTHETIC DOCUMENT - written for PolicyLens evaluation. Fictional insurer, fictional product.
+
+JUNIPER ASSURANCE (fictional)
+CIS: Family Maternity Shield
+
+--- Page 1 ---
+Sum insured: Rs. 1 crore, floater for self, spouse and two children.
+Room rent: Rs. 8,000 per day maximum. Room rent above this will lead to proportionate reduction of room-linked charges.
+ICU: Rs. 15,000 per day maximum.
+Co-pay: 5% on all claims.
+Deductible: Rs. 10,000 on every claim.
+
+--- Page 2 ---
+Maternity benefits (after a 90-day initial waiting period; note that 90 days applies to all claims):
+- Normal delivery: up to Rs. 50,000
+- Caesarean section: up to Rs. 80,000
+- New-born cover from day one.
+Pre-existing disease waiting period: 3 years.
+Joint replacement and spine surgery: 4 years waiting.
+Cataract: 2 years waiting.
+
+--- Page 3 ---
+Exclusions
+1. War and nuclear risks
+2. Cosmetic and aesthetic treatments
+3. Treatment for alcoholism or drug abuse
+4. Non-medical items such as gloves and masks
+Treatment is restricted to our network hospitals except in an emergency.

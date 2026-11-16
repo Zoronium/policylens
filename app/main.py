@@ -29,6 +29,7 @@ class PolicyOut(BaseModel):
     model: str
     pages: list[str]
     coverage: PolicyCoverage
+    needs_human_review: bool
     review_fields: list[str]  # paths of fields flagged "needs human review"
 
 
@@ -44,6 +45,7 @@ def _out(row: Policy) -> PolicyOut:
         model=row.model,
         pages=row.pages,
         coverage=cov,
+        needs_human_review=bool(flagged),
         review_fields=flagged,
     )
 
