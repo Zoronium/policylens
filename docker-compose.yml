@@ -1,0 +1,33 @@
+# API and UI in one container. SQLite by default (a volume keeps it).
+# Postgres is optional: `docker compose --profile postgres up --build`
+# and set DATABASE_URL=postgresql+psycopg://policylens:policylens@postgres:5432/policylens in .env.
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////data/policylens.db}
+    volumes:
+      - data:/data
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["postgres"]
+    environment:
+      POSTGRES_USER: policylens
+      POSTGRES_PASSWORD: policylens
+      POSTGRES_DB: policylens
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U policylens"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  data:
+  pgdata:
