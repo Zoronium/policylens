@@ -1,0 +1,178 @@
+/* Lens, the mascot. One accent, one stroke weight, no gradients. */
+.lens {
+  display: block;
+  overflow: visible;
+  flex: none;
+  --lens-ink: #064349;
+  --lens-accent: #0b5f66;
+}
+.lens-handle {
+  fill: var(--lens-accent);
+}
+.lens-glass {
+  fill: #fff;
+  stroke: var(--lens-accent);
+  stroke-width: 5;
+}
+.lens-white {
+  fill: #fff;
+}
+.lens-pupil {
+  fill: var(--lens-ink);
+  transition: transform 0.25s ease;
+}
+.lens-mouth {
+  fill: none;
+  stroke: var(--lens-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.lens-mouth--o {
+  fill: var(--lens-ink);
+  stroke: none;
+  opacity: 0;
+}
+.lens-dots {
+  fill: var(--lens-accent);
+  opacity: 0;
+}
+
+/* The whole body pivots on the handle's tip so every move reads as a small character, not a spinner. */
+.lens-body {
+  transform-box: fill-box;
+  transform-origin: 80% 95%;
+}
+.lens-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* idle: a blink every few seconds, a slow breath */
+.lens[data-mood="idle"] .lens-body {
+  animation: lens-breathe 4.8s ease-in-out infinite;
+}
+.lens[data-mood="idle"] .lens-eye {
+  animation: lens-blink 4.8s infinite;
+}
+
+/* reading: eyes sweep along a line of text */
+.lens[data-mood="reading"] .lens-pupil {
+  animation: lens-read 1.6s ease-in-out infinite;
+}
+.lens[data-mood="reading"] .lens-body {
+  animation: lens-lean 1.6s ease-in-out infinite;
+}
+
+/* thinking: eyes up and to the side, an "o" mouth, three dots bobbing, a slow tilt */
+.lens[data-mood="thinking"] .lens-pupil {
+  transform: translate(1.6px, -1.8px);
+}
+.lens[data-mood="thinking"] .lens-mouth--smile {
+  opacity: 0;
+}
+.lens[data-mood="thinking"] .lens-mouth--o {
+  opacity: 1;
+}
+.lens[data-mood="thinking"] .lens-body {
+  animation: lens-tilt 2.4s ease-in-out infinite;
+}
+.lens[data-mood="thinking"] .lens-dots {
+  opacity: 1;
+}
+.lens[data-mood="thinking"] .lens-dots circle {
+  animation: lens-dot 1.2s ease-in-out infinite;
+}
+.lens[data-mood="thinking"] .lens-dots circle:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.lens[data-mood="thinking"] .lens-dots circle:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* done: one hop, then a smile that stays */
+.lens[data-mood="done"] .lens-body {
+  animation: lens-hop 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) 1;
+}
+.lens[data-mood="done"] .lens-pupil {
+  transform: translate(0, 0.6px);
+}
+
+@keyframes lens-breathe {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(-1.5deg) scale(1.025);
+  }
+}
+@keyframes lens-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes lens-read {
+  0%,
+  100% {
+    transform: translate(-1.6px, 1px);
+  }
+  50% {
+    transform: translate(1.8px, 1px);
+  }
+}
+@keyframes lens-lean {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes lens-tilt {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+@keyframes lens-dot {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  40% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+@keyframes lens-hop {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  35% {
+    transform: translateY(-9px) rotate(-6deg);
+  }
+  65% {
+    transform: translateY(0) rotate(3deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lens *,
+  .lens {
+    animation: none !important;
+    transition: none !important;
+  }
+}

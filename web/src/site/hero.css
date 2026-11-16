@@ -1,0 +1,179 @@
+/* PolicyLens look for every stage on the site: its petrol accent, its type, a cool ground. */
+.pl-look .ss-stage {
+  --ss-accent: #0b5f66;
+  --ss-accent-2: #0b5f66;
+  --ss-accent-soft: #d9eaec;
+  --ss-accent-text: #064349;
+  --ss-danger: #962a1b;
+  --ss-font: "Public Sans Variable", "Public Sans", system-ui, sans-serif;
+}
+
+/* Hero demo ---------------------------------------------------------------------------------------- */
+.hd .ss-stage {
+  overflow: hidden;
+  background: var(--ss-well);
+}
+
+/* Pinned top and sides, off the bottom: the window runs out of the stage, it does not float in it */
+.hd-win {
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  width: 664px;
+  height: 420px;
+}
+.hd .ss-stage[data-layout="compact"] .hd-win {
+  top: 16px;
+  left: 16px;
+  width: 326px;
+  height: 700px;
+}
+
+.hd-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+  background: var(--ss-surface);
+}
+.hd .ss-stage[data-layout="compact"] .hd-cols {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+}
+.hd-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px 12px 12px;
+}
+.hd-col + .hd-col {
+  border-left: 1px solid var(--ss-line-faint);
+}
+.hd .ss-stage[data-layout="compact"] .hd-col + .hd-col {
+  border-left: 0;
+  border-top: 1px solid var(--ss-line-faint);
+}
+
+.hd-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  min-height: 30px;
+}
+.hd-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ss-text-strong);
+}
+.hd-meter {
+  will-change: transform;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--ss-accent-soft);
+  color: var(--ss-accent-text);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.hd-meter .hd-count {
+  display: inline-block;
+  min-width: 5.4ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.hd-meter--zero {
+  background: var(--ss-success-soft);
+  color: var(--ss-success-text);
+}
+.hd-unit {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.hd-think {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--ss-well);
+  min-height: 112px;
+  align-content: start;
+}
+.hd .ss-stage[data-layout="compact"] .hd-think {
+  min-height: 76px;
+}
+.hd-label {
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--ss-text-faint);
+}
+.hd-stream {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ss-text);
+}
+
+.hd-list {
+  display: flex;
+  flex-direction: column;
+}
+.hd-name {
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--ss-text-strong);
+  font-weight: 500;
+}
+.hd-sub {
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--ss-text-faint);
+}
+.hd-val {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ss-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+.hd-val--cut {
+  color: var(--ss-danger);
+}
+
+.hd-pay {
+  margin-top: 4px;
+  display: grid;
+  gap: 2px;
+  padding: 10px 8px 14px;
+  border-radius: 8px;
+  background: var(--ss-accent-soft);
+}
+.hd-pay .hd-label {
+  color: var(--ss-accent-text);
+}
+.hd-amount {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ss-accent-text);
+  font-variant-numeric: tabular-nums;
+}
+.hd-num {
+  display: inline-block;
+  min-width: 6ch;
+}
+.hd-rupee {
+  font-size: 22px;
+  font-weight: 500;
+}
+.hd .ss-stage[data-layout="compact"] .hd-amount {
+  font-size: 30px;
+}

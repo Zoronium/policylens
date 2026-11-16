@@ -6,13 +6,14 @@ PolicyLens takes a health insurance policy document, extracts the coverage terms
 quote for each one, and then computes the expected payout for a hospital bill with a deterministic rules engine.
 The model never makes a money decision, and every rupee in the result has a line in an audit trail.
 
-![Estimating a claim: the payout and the nine-step audit trail](docs/screenshots/03-estimate.png)
+![PolicyLens home page: the model reads, the rules decide, with a replayed recorded run](docs/screenshots/00-home.png)
 
 Everything in this repo is synthetic. The sample and evaluation policies were written for this project and the
 insurers in them are fictional.
 
 **Contents:** [What it does](#what-it-does) · [Worked example](#worked-example) ·
-[Why two halves](#why-the-llm-and-the-rules-engine-are-separate) · [Screens](#the-three-screens) ·
+[Why two halves](#why-the-llm-and-the-rules-engine-are-separate) · [The site](#the-site) ·
+[The tool](#the-three-screens) ·
 [Eval results](#eval-results) · [Run it](#run-it) · [API](#api) · [Repo layout](#repo-layout) ·
 [Limitations](#limitations)
 
@@ -81,18 +82,43 @@ second kind of problem. Keeping them apart gives three things:
 The split is enforced, not just intended: `engine/` imports no LLM or network code, and a test fails if it ever
 does.
 
+## The site
+
+The web app has two kinds of page. **Home** and **How it works** explain the idea with animated demos and a mascot,
+Lens. **Try it** is the working tool.
+
+![How it works: the model reads and thinks with a token meter, the server checks quotes, plain code decides](docs/screenshots/01-how-it-works.png)
+
+The demos replay **one recorded run**, not a simulation: a real extraction of the synthetic Harbor Shield sample
+through `gpt-oss-120b` on Groq (1,051 tokens in, 863 spent thinking, 687 to write the answer, 2,601 in 4.2 seconds),
+then the rules engine's real output for a ₹91,000 cataract bill. The model's reasoning text on the page is its own,
+cut for length. All of it lives in one file, [web/src/site/recorded.ts](web/src/site/recorded.ts). One element is
+invented and labelled as such on the page: the "Needs review" row in step 2 is a made-up misread quote, there to show
+what a flag looks like. In the recorded run every quote was found.
+
+- Home and How it works need neither the API nor an LLM key, so they can be hosted as plain static files
+  (`npm run build` in `web/`, assets use relative URLs). Try it needs the API.
+- The animated demos use the MIT-licensed [Stageshow](https://github.com/benjitaylor/skills) kit, copied into
+  [web/src/stageshow](web/src/stageshow) with its licence. The copy leaves out the kit's bundled app-icon artwork,
+  which is not MIT-licensed.
+- The mascot is [web/src/site/Mascot.tsx](web/src/site/Mascot.tsx): a magnifier with a face, animated in CSS only.
+  It also shows up in the "Reading the policy" wait inside the tool.
+- Reduced-motion users get the finished frame of each demo instead of the animation.
+
 ## The three screens
 
-One interface for the analyst who reviews and the engineer who reads the code. Add a policy, review what was
-extracted next to the source text, then estimate a claim.
+The tool itself: add a policy, review what was extracted next to the source text, then estimate a claim. One
+interface for the analyst who reviews and the engineer who reads the code.
 
 | Add a policy | Review coverage (source quote and page highlight) |
 |---|---|
-| ![Add a policy screen](docs/screenshots/01-add-policy.png) | ![Extracted coverage, with the ICU cap row expanded to show its quote](docs/screenshots/02-coverage.png) |
+| ![Add a policy screen](docs/screenshots/02-add-policy.png) | ![Extracted coverage, with the ICU cap row expanded to show its quote](docs/screenshots/03-coverage.png) |
 
-The estimate screen is responsive; the audit trail stays readable at phone width.
+![Estimating a claim: the payout and the nine-step audit trail](docs/screenshots/04-estimate.png)
 
-<img src="docs/screenshots/04-estimate-mobile.png" alt="Estimate screen on a 390 pixel wide phone" width="320">
+Everything is responsive down to phone width; the home page is shown below at 390 px.
+
+<img src="docs/screenshots/05-home-mobile.png" alt="Home page on a 390 pixel wide phone" width="320">
 
 Design notes are in [DESIGN.md](DESIGN.md) and the product brief in [PRODUCT.md](PRODUCT.md). Money is shown with
 Indian digit grouping (₹10,00,000) and travels through the API as decimal strings, never floats.
@@ -157,6 +183,8 @@ cd web && npm install && npm run dev        # http://localhost:5173, proxies to 
 ```
 
 UI, built and served by the API on one port: `cd web && npm run build`, then open http://localhost:8000.
+Pages are hash routes: `#/` home, `#/how` how it works, `#/try` add a policy, `#/p/<id>` and `#/p/<id>/estimate` for a
+stored policy.
 
 Docker (API and UI in one image; Postgres is optional). The compose file is validated but the image build has not
 been run on the author's machine:
@@ -231,7 +259,9 @@ engine/    the rules engine (Decimal only, no LLM or network imports) and its as
 evals/     10 hand-labelled synthetic policies, scoring, and the CLI (python -m evals.run)
 samples/   three synthetic policies used by the UI
 tests/     pytest: extraction with a stub LLM, engine edge cases, API, purity check, eval scoring
-web/       Vite + React + TypeScript UI
+web/       Vite + React + TypeScript: the tool screens, the Home and How it works pages
+  src/site/       pages, demos, mascot and the recorded run
+  src/stageshow/  the Stageshow animation kit (MIT), copied in
 docs/      README screenshots
 ```
 
@@ -249,6 +279,11 @@ docs/      README screenshots
 - **Extraction depends on the model.** Quotes are checked against the page, but a correct quote can still support a
   wrong reading of it.
 - **Evaluation is small and in-house** (see above). There are no real insurer documents in the repo and none were used.
+- **The demos are a recording.** They replay one run on one model and one synthetic policy. A different model or
+  document gives different tokens and text. The animation timings are paced for reading, not measured.
+- **The animation checks are partly green.** The Stageshow film gate passes at 390 px and at desktop width except one
+  line about the kit's own window title bar (its title is deliberately offset 36 px to look centred). Motion was
+  judged from contact sheets and not watched live on a real phone.
 - **Docker and Postgres are untested** on the author's machine.
 - **Access is one shared hourly code, not user accounts.** There are no users, roles or audit of who did what, and
   no payments. The `/estimate` result is an estimate, not a claim decision.

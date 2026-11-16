@@ -3,15 +3,32 @@ import { api, ApiError, type Policy } from "./api";
 import Coverage from "./screens/Coverage";
 import Estimate from "./screens/Estimate";
 import Upload from "./screens/Upload";
+import Home from "./site/Home";
+import How from "./site/How";
 import { Alert, Skeleton } from "./ui";
 
-type Route = { screen: "upload" } | { screen: "coverage" | "estimate"; id: string };
+type Route =
+  | { screen: "home" }
+  | { screen: "how" }
+  | { screen: "upload" }
+  | { screen: "coverage" | "estimate"; id: string };
 
 function parseHash(): Route {
-  const m = /^#\/p\/([\w-]+)(\/estimate)?$/.exec(window.location.hash);
-  if (!m) return { screen: "upload" };
-  return { screen: m[2] ? "estimate" : "coverage", id: m[1] };
+  const h = window.location.hash;
+  const m = /^#\/p\/([\w-]+)(\/estimate)?$/.exec(h);
+  if (m) return { screen: m[2] ? "estimate" : "coverage", id: m[1] };
+  if (h === "#/try") return { screen: "upload" };
+  if (h === "#/how") return { screen: "how" };
+  return { screen: "home" };
 }
+
+const TITLES = {
+  home: "PolicyLens",
+  how: "How it works",
+  upload: "Add a policy",
+  coverage: "Extracted coverage",
+  estimate: "Estimate a claim",
+};
 
 export default function App() {
   const [route, setRoute] = useState<Route>(parseHash);
@@ -24,7 +41,7 @@ export default function App() {
     return () => window.removeEventListener("hashchange", on);
   }, []);
 
-  const id = route.screen === "upload" ? null : route.id;
+  const id = route.screen === "coverage" || route.screen === "estimate" ? route.id : null;
   useEffect(() => {
     if (!id) return;
     if (policy?.id === id) return;
@@ -40,8 +57,7 @@ export default function App() {
   }, [id, policy?.id]);
 
   useEffect(() => {
-    const names = { upload: "Add a policy", coverage: "Extracted coverage", estimate: "Estimate a claim" };
-    document.title = `${names[route.screen]} · PolicyLens`;
+    document.title = route.screen === "home" ? "PolicyLens: a model reads, plain code decides" : `${TITLES[route.screen]} · PolicyLens`;
     window.scrollTo({ top: 0 });
   }, [route.screen]);
 
@@ -50,6 +66,7 @@ export default function App() {
   }, []);
 
   const ready = id && policy?.id === id ? policy : null;
+  const inTool = route.screen === "upload" || route.screen === "coverage" || route.screen === "estimate";
   const step = route.screen === "upload" ? 1 : route.screen === "coverage" ? 2 : 3;
 
   return (
@@ -59,7 +76,7 @@ export default function App() {
       </a>
       <header className="top">
         <div className="top-inner">
-          <a className="brand" href="#/" aria-label="PolicyLens, add a policy">
+          <a className="brand" href="#/" aria-label="PolicyLens, home">
             <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
               <rect width="32" height="32" rx="7" fill="var(--accent)" />
               <circle cx="15" cy="15" r="6" fill="none" stroke="#fff" strokeWidth="2.5" />
@@ -67,27 +84,48 @@ export default function App() {
             </svg>
             PolicyLens
           </a>
-          <nav aria-label="Steps" className="steps">
-            <a href="#/" aria-current={step === 1 ? "step" : undefined}>
-              <span className="n">1</span>Policy
+          <nav aria-label="Main" className="nav">
+            <a href="#/how" aria-current={route.screen === "how" ? "page" : undefined}>
+              How it works
             </a>
-            <StepLink n={2} label="Coverage" current={step === 2} href={ready ? `#/p/${ready.id}` : null} />
-            <StepLink n={3} label="Estimate" current={step === 3} href={ready ? `#/p/${ready.id}/estimate` : null} />
+            <a href="#/try" aria-current={inTool ? "page" : undefined}>
+              Try it
+            </a>
+            {!inTool && (
+              <a className="btn btn-primary" href="#/try">
+                Add a policy
+              </a>
+            )}
           </nav>
         </div>
       </header>
+      {inTool && (
+        <div className="subbar">
+          <div className="subbar-inner">
+            <nav aria-label="Steps" className="steps">
+              <a href="#/try" aria-current={step === 1 ? "step" : undefined}>
+                <span className="n">1</span>Policy
+              </a>
+              <StepLink n={2} label="Coverage" current={step === 2} href={ready ? `#/p/${ready.id}` : null} />
+              <StepLink n={3} label="Estimate" current={step === 3} href={ready ? `#/p/${ready.id}/estimate` : null} />
+            </nav>
+          </div>
+        </div>
+      )}
 
       <main id="main" tabIndex={-1}>
+        {route.screen === "home" && <Home />}
+        {route.screen === "how" && <How />}
         {route.screen === "upload" && <Upload onDone={(p) => { setPolicy(p); go(`#/p/${p.id}`); }} />}
-        {route.screen !== "upload" && loadError && (
+        {id && loadError && (
           <div className="page">
             <Alert title="Could not load this policy">{loadError}</Alert>
             <p>
-              <a href="#/">Add a policy</a>
+              <a href="#/try">Add a policy</a>
             </p>
           </div>
         )}
-        {route.screen !== "upload" && !loadError && !ready && (
+        {id && !loadError && !ready && (
           <div className="page" aria-busy="true">
             <Skeleton lines={5} />
           </div>

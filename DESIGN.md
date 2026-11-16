@@ -23,5 +23,18 @@ A claims analyst at a desk in daylight, comparing a policy document with what th
 - Buttons: one primary (petrol), one secondary (outlined), one quiet. Same shape and height everywhere.
 - States present: loading skeletons, empty, error alert, disabled, focus ring (2px petrol), hover, reduced motion.
 
+## Site pages and demos
+Home and How it works are Persuade-mode pages on the same tokens: serif headings, petrol accent, tinted neutrals, one
+call to action per screen ("Add a policy" in the header, "Try it with a sample policy" in the hero and closing band).
+The animated demos are Stageshow stages in the PolicyLens look (`.pl-look` in `site/hero.css`): a real window on wide
+screens, a plain card on phone width. Each plays once when it scrolls into view and ends on its payoff; Replay remounts
+it. Token meters tick in small steps from the script, in fixed-width boxes, so nothing moves while they count.
+
+## Mascot
+Lens is the brand mark (a magnifier) with a face. Four moods, CSS only: idle (slow breath, blink), reading (eyes sweep),
+thinking (eyes up, three dots), done (one hop, smile). It appears where the product is working or has finished: the
+hero demo, the scenes, the "Reading the policy" wait. It never carries information that is not also in text.
+
 ## Not used
-No emoji, no gradient blobs, no icon-card grids, no modals, no decorative motion.
+No emoji, no gradient blobs, no icon-card grids, no modals. Motion only where it shows a process (the demos, the
+mascot); none decorative elsewhere.

@@ -1,0 +1,336 @@
+/* Marketing pages: Home and How it works. Same tokens as the tool; this file only adds layout. */
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.btn-lg {
+  min-height: 52px;
+  padding: 0 24px;
+  font-size: 1rem;
+}
+a.btn {
+  text-decoration: none;
+}
+
+/* Header: primary links and one call to action */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav a:not(.btn) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--r);
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+.nav a:not(.btn):hover {
+  background: var(--surface-2);
+}
+.nav a[aria-current="page"] {
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.nav .btn {
+  min-height: 40px;
+  margin-left: 8px;
+}
+.subbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.subbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6px var(--gutter);
+}
+
+/* Hero */
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 56px var(--gutter) 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: 40px;
+  align-items: center;
+}
+.hero h1 {
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  line-height: 1.12;
+  font-variation-settings: "opsz" 60;
+}
+.hero-lede {
+  margin: 20px 0 0;
+  max-width: 34rem;
+  font-size: 1.0625rem;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+.hero-proof {
+  margin: 20px 0 0;
+  max-width: 32rem;
+  font-size: 0.9375rem;
+  color: var(--ink-3);
+}
+.hero-demo {
+  position: relative;
+  min-width: 0;
+}
+.demo-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.replay {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--ink-2);
+  font: 500 0.8125rem/1 var(--sans);
+  cursor: pointer;
+}
+.replay:hover {
+  background: var(--surface-2);
+}
+.hero-demo .ss-fit {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+/* Bands */
+.band {
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+  padding: 64px 0;
+}
+.band h2,
+.numbers h2 {
+  font-size: 1.75rem;
+}
+.three {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+}
+.three li {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+.three h3 {
+  font-size: 1.25rem;
+}
+.three p {
+  margin: 0;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.three-n {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font: 600 0.875rem/1 var(--sans);
+}
+.more {
+  margin: 32px 0 0;
+}
+.more a,
+.closing a:not(.btn) {
+  font-weight: 600;
+}
+
+.numbers {
+  padding-block: 64px;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  margin: 28px 0 0;
+}
+.stats div {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.stats dt {
+  order: 2;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+.stats dd {
+  order: 1;
+  margin: 0;
+  font: 600 3.5rem/1 var(--serif);
+  color: var(--accent-ink);
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: -0.02em;
+}
+.caveat {
+  margin: 28px 0 0;
+  max-width: 44rem;
+  color: var(--ink-3);
+  font-size: 0.9375rem;
+  text-wrap: pretty;
+}
+
+.closing {
+  background: var(--accent-soft);
+  padding: 48px 0;
+}
+.closing-in {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.closing-in > div {
+  flex: 1 1 22rem;
+}
+.closing h2 {
+  font-size: 1.5rem;
+}
+.closing p {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  max-width: 38rem;
+}
+
+/* How it works ------------------------------------------------------------------------------------- */
+.how-hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px var(--gutter) 24px;
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.how-hero h1 {
+  max-width: 40rem;
+}
+.how-hero p {
+  margin: 12px 0 0;
+  max-width: 40rem;
+  color: var(--ink-2);
+  font-size: 1.0625rem;
+}
+.how-note {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  color: var(--ink-3);
+  font-size: 0.875rem;
+}
+.scene {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 56px var(--gutter);
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 48px;
+  align-items: center;
+}
+.scene + .scene {
+  border-top: 1px solid var(--line);
+}
+.scene:nth-of-type(even) {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+}
+.scene:nth-of-type(even) .scene-copy {
+  order: 2;
+}
+.scene-copy h2 {
+  font-size: 1.75rem;
+}
+.scene-copy p {
+  margin: 14px 0 0;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.scene-copy .fact {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.9375rem;
+}
+.scene-demo {
+  position: relative;
+  min-width: 0;
+}
+.scene-demo .ss-fit {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.scene-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: var(--accent-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .scene,
+  .scene:nth-of-type(even) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .scene:nth-of-type(even) .scene-copy {
+    order: 0;
+  }
+  .three,
+  .stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .hero {
+    padding-top: 36px;
+  }
+}
+@media (max-width: 640px) {
+  .nav a:not(.btn):not([aria-current]) {
+    display: none;
+  }
+}
+
+.busy-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}

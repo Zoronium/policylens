@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, hasSession, type Policy, type Sample } from "../api";
+import Mascot from "../site/Mascot";
 import { Alert, Icon, Skeleton } from "../ui";
 
 function pretty(name: string) {
@@ -66,7 +67,10 @@ export default function Upload({ onDone }: { onDone: (p: Policy) => void }) {
   if (busy)
     return (
       <div className="page">
-        <h1>Reading the policy</h1>
+        <div className="busy-head">
+          <Mascot mood="thinking" size={64} />
+          <h1>Reading the policy</h1>
+        </div>
         <p className="lede" role="status">
           The model is extracting coverage and quoting its sources. Every quote is then checked against the page it
           cites. {elapsed}s elapsed; most policies take 10 to 40 seconds.
