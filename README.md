@@ -1,13 +1,54 @@
 # PolicyLens
 
-An LLM reads a health insurance policy and extracts the coverage terms, each with a page number and a verbatim quote.
-A deterministic rules engine then computes the expected claim payout for a hospital bill.
+**An LLM reads the policy. Plain code decides the payout.**
+
+PolicyLens takes a health insurance policy document, extracts the coverage terms with a page number and a verbatim
+quote for each one, and then computes the expected payout for a hospital bill with a deterministic rules engine.
 The model never makes a money decision, and every rupee in the result has a line in an audit trail.
 
-Built as a portfolio project. Everything in the repo is synthetic: the sample and evaluation policies are written for
-this project, and the insurers in them are fictional.
+![Estimating a claim: the payout and the nine-step audit trail](docs/screenshots/03-estimate.png)
 
-## Architecture
+Everything in this repo is synthetic. The sample and evaluation policies were written for this project and the
+insurers in them are fictional.
+
+**Contents:** [What it does](#what-it-does) · [Worked example](#worked-example) ·
+[Why two halves](#why-the-llm-and-the-rules-engine-are-separate) · [Screens](#the-three-screens) ·
+[Eval results](#eval-results) · [Run it](#run-it) · [API](#api) · [Repo layout](#repo-layout) ·
+[Limitations](#limitations)
+
+## What it does
+
+1. **Read.** Upload a policy (PDF or pasted text). A language model returns a structured `PolicyCoverage`: sum
+   insured, room rent cap, ICU cap, co-pay, deductible, waiting periods, sub-limits, exclusions. Each value carries
+   `source_page`, `source_quote` and a confidence.
+2. **Check.** The server verifies that every quote really appears on the page it cites. A value is flagged for
+   human review when its confidence is under the threshold (default 0.7) or when its quote cannot be found.
+3. **Decide.** Enter a procedure and an itemised bill. The rules engine applies the policy in a fixed order and
+   returns what the insurer pays, what the patient pays, and the amount before and after every rule.
+
+## Worked example
+
+Policy: Harbor Shield "Care Basic" (synthetic). Sum insured ₹5,00,000, room rent capped at 1% of the sum insured
+per day, cataract sub-limit ₹40,000, 10% co-pay. The patient has a cataract admission of 3 days, a room at ₹8,000
+a day, and a bill of ₹91,000. This is the engine's actual output, shown in the screenshot above:
+
+| # | Rule | What happened | Amount after |
+|---|---|---|---|
+| 1 | Bill as submitted | Sum of itemised charges | ₹91,000.00 |
+| 2 | Waiting period | Policy age 800 days, cataract wait 730 days: complete | ₹91,000.00 |
+| 3 | Exclusions | Cataract is not excluded | ₹91,000.00 |
+| 4 | Room rent cap | Cap ₹5,000 / room ₹8,000 = 0.6250, applied to room, doctor and OT charges only | ₹65,875.00 |
+| 5 | ICU cap | No ICU stay billed | ₹65,875.00 |
+| 6 | Sub-limit | Cataract limit ₹40,000 | ₹40,000.00 |
+| 7 | Deductible | None | ₹40,000.00 |
+| 8 | Co-payment | 10%, insurer pays 90% | ₹36,000.00 |
+| 9 | Sum insured ceiling | Remaining ₹5,00,000 covers it | ₹36,000.00 |
+
+Insurer pays **₹36,000**, the patient pays ₹55,000. The step that surprises people is step 4: a room costing more
+than the cap also scales the doctor and theatre charges, which is why ₹25,125 disappears before the sub-limit is
+even looked at.
+
+## Why the LLM and the rules engine are separate
 
 ```mermaid
 flowchart LR
@@ -26,13 +67,6 @@ flowchart LR
     end
 ```
 
-- `app/` FastAPI service, PDF text, LLM client, extraction, storage.
-- `engine/` the rules engine. It imports no LLM or network code; a test fails if it ever does.
-- `evals/` hand-labelled golden set and the scoring CLI.
-- `web/` Vite, React and TypeScript UI with three screens: add a policy, review extracted coverage, estimate a claim.
-
-## Why the LLM and the rules engine are separate
-
 A language model is good at reading messy documents and bad at arithmetic you have to defend. A payout is the
 second kind of problem. Keeping them apart gives three things:
 
@@ -41,9 +75,27 @@ second kind of problem. Keeping them apart gives three things:
    before and after. Same inputs, same answer, every time.
 2. **Testability.** The engine has unit tests with exact `Decimal` expectations. The extractor is measured with an
    eval set instead, because its failures are statistical.
-3. **A place for a human.** The only uncertain part is extraction, and it reports its own uncertainty: a value is
-   flagged when its confidence is under the threshold (default 0.7) or when its quote cannot be found on the page it
-   cites. A reviewer checks those values, not the arithmetic.
+3. **A place for a human.** The only uncertain part is extraction, and it reports its own uncertainty. A reviewer
+   checks the flagged values, not the arithmetic.
+
+The split is enforced, not just intended: `engine/` imports no LLM or network code, and a test fails if it ever
+does.
+
+## The three screens
+
+One interface for the analyst who reviews and the engineer who reads the code. Add a policy, review what was
+extracted next to the source text, then estimate a claim.
+
+| Add a policy | Review coverage (source quote and page highlight) |
+|---|---|
+| ![Add a policy screen](docs/screenshots/01-add-policy.png) | ![Extracted coverage, with the ICU cap row expanded to show its quote](docs/screenshots/02-coverage.png) |
+
+The estimate screen is responsive; the audit trail stays readable at phone width.
+
+<img src="docs/screenshots/04-estimate-mobile.png" alt="Estimate screen on a 390 pixel wide phone" width="320">
+
+Design notes are in [DESIGN.md](DESIGN.md) and the product brief in [PRODUCT.md](PRODUCT.md). Money is shown with
+Indian digit grouping (₹10,00,000) and travels through the API as decimal strings, never floats.
 
 ## Eval results
 
@@ -75,12 +127,16 @@ How to read these numbers:
   fairly regular layouts, so the accuracy here is an upper bound for real documents, not an estimate of them. One run
   is reported; results move a little between runs even at temperature 0.
 - Accuracy on unflagged fields is almost the same as overall accuracy because there was one wrong field and the
-  model did not flag it. On this set the flag has not been shown to catch errors. It has caught a conditional co-pay
-  in a sample policy ("20% for insureds aged 60 and above") in manual use, which is the case it is meant for.
+  model did not flag it. **On this set the review flag has not been shown to catch errors.**
+- **A known miss.** The sample "Lakeview family floater" states a co-pay of "20% for insured persons aged 60 and
+  above, and for all claims at non-network hospitals". The engine models a flat co-pay, so this is a conditional term
+  it cannot represent. In one manual run the model flagged that value at 60% confidence; in another run (the coverage
+  screenshot above) it returned a flat 20% at 100% with no flag. Treat conditional terms as something a person must
+  read.
 
 ## Run it
 
-Needs Python 3.12 or newer (developed on 3.13), Node 20 or newer.
+Needs Python 3.12 or newer (developed on 3.13) and Node 20 or newer.
 
 ```bash
 python -m venv .venv
@@ -92,7 +148,7 @@ cp .env.example .env                        # set LLM_BASE_URL, LLM_API_KEY, LLM
 Any OpenAI-compatible chat-completions endpoint works (OpenAI, Groq, OpenRouter, a local Ollama or vLLM). The client
 asks for `response_format: json_object`, validates the reply with Pydantic, retries once with the validation error,
 and after that keeps the fields that validate and marks the rest as unknown with confidence 0. HTTP 429 and 5xx are
-retried with backoff.
+retried with backoff. The rules engine needs no LLM at all: `POST /estimate` works on any stored policy.
 
 UI, in development with hot reload:
 
@@ -102,7 +158,8 @@ cd web && npm install && npm run dev        # http://localhost:5173, proxies to 
 
 UI, built and served by the API on one port: `cd web && npm run build`, then open http://localhost:8000.
 
-Docker (API and UI in one image; Postgres is optional):
+Docker (API and UI in one image; Postgres is optional). The compose file is validated but the image build has not
+been run on the author's machine:
 
 ```bash
 docker compose up --build                       # SQLite
@@ -112,21 +169,34 @@ docker compose --profile postgres up --build    # with Postgres: put DATABASE_UR
 Tests and lint:
 
 ```bash
-.venv/Scripts/python -m pytest
+.venv/Scripts/python -m pytest              # 65 tests
 .venv/Scripts/python -m ruff check .
 cd web && npm run typecheck
 ```
 
-API:
+## API
 
 | Method and path | Purpose |
 |---|---|
-| `POST /policies` | Multipart `file` (PDF or text) or `text`. Returns the coverage, page texts, and `review_fields`. |
+| `POST /policies` | Multipart `file` (PDF or text) or `text`. Returns the coverage, page texts, `needs_human_review` and `review_fields`. |
 | `GET /policies/{id}` | The stored policy. The review flags are recomputed with the current threshold. |
 | `POST /estimate` | `{policy_id, scenario}`. Returns payable, patient pays and the audit trail. Money is a decimal string. |
 | `GET /samples` | The three synthetic sample policies. |
+| `GET /health` | Liveness. |
 
 Pasted text marks pages with a line such as `--- Page 2 ---`. Without markers it is read as page 1.
+
+## Repo layout
+
+```
+app/       FastAPI service: PDF text, LLM client, extraction, quote checks, storage
+engine/    the rules engine (Decimal only, no LLM or network imports) and its assumptions in engine/README.md
+evals/     10 hand-labelled synthetic policies, scoring, and the CLI (python -m evals.run)
+samples/   three synthetic policies used by the UI
+tests/     pytest: extraction with a stub LLM, engine edge cases, API, purity check, eval scoring
+web/       Vite + React + TypeScript UI
+docs/      README screenshots
+```
 
 ## Limitations
 
@@ -135,11 +205,12 @@ Pasted text marks pages with a line such as `--- Page 2 ---`. Without markers it
   deductibles or sub-limits across claims, no floater or restoration logic, and exact-name matching of procedures.
 - **The list of charges scaled by proportionate deduction is an assumption** drawn from secondary articles about IRDAI
   rules, not from the circular. Check it against the policy wording.
-- **Conditional terms are not modelled.** A co-pay that depends on age or hospital type is extracted as a number with
-  low confidence at best; the engine would apply it to every claim.
+- **Conditional terms are not modelled.** A co-pay that depends on age or hospital type is extracted as one number;
+  the engine would apply it to every claim (see the known miss above).
 - **No OCR.** Scanned PDFs return no text and are rejected.
 - **Page numbers come from the PDF page order,** not the printed page numbers.
 - **Extraction depends on the model.** Quotes are checked against the page, but a correct quote can still support a
   wrong reading of it.
 - **Evaluation is small and in-house** (see above). There are no real insurer documents in the repo and none were used.
+- **Docker and Postgres are untested** on the author's machine.
 - **No auth, no multi-user concerns, no payments.** The `/estimate` result is an estimate, not a claim decision.
