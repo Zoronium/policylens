@@ -166,10 +166,46 @@ docker compose up --build                       # SQLite
 docker compose --profile postgres up --build    # with Postgres: put DATABASE_URL=postgresql+psycopg://policylens:policylens@postgres:5432/policylens in .env
 ```
 
+### Protecting the LLM key
+
+Reading a policy spends your LLM key, so on a public server that endpoint is guarded. Estimating a claim uses no
+model and stays open.
+
+1. Set `ADMIN_TOKEN` in `.env` (16+ random characters). With it empty there is no login, which is fine locally and
+   wrong for a public server.
+2. Get the current access code on the server: `python -m app.access` (in Docker:
+   `docker compose exec api python -m app.access`). It prints something like `AJXJ-YOQA` and when it stops working.
+   The code is derived from `ADMIN_TOKEN` and the current UTC hour, so it changes on the hour and nobody can compute
+   it without the token. `--next` prints the next hour's code.
+3. A visitor enters the code on the Add a policy screen. The server trades it for a signed session token that lasts
+   one hour. Without a valid token, `POST /policies` returns 401.
+
+Limits, all returning 429 with `Retry-After`:
+
+| What | Default | Setting |
+|---|---|---|
+| Extractions per client IP per hour | 5 | `EXTRACTIONS_PER_HOUR` |
+| Extractions across everyone, rolling 24 h (the spend ceiling) | 100 | `LLM_DAILY_LIMIT` |
+| Login attempts per IP per 15 min | 10 | fixed |
+| Estimates per IP per minute | 120 | fixed |
+
+What this does not do:
+
+- It limits who can spend the key and how much. It does not protect a key that leaks some other way (a committed
+  `.env`, a shared screenshot, logs). Keep `.env` out of git and images (both are already excluded here), rotate the
+  key if it ever appears anywhere, and set a spend cap at your LLM provider as the real backstop.
+- Whoever has the code can use it until it changes, and a session lasts an hour after login, so a code shared late in
+  the hour can be used for up to about two more hours.
+- Counters are in memory: they reset when the server restarts and are not shared between workers. Run one worker.
+- Behind a reverse proxy set `TRUST_PROXY=1` so the real client IP is used; without a proxy leave it empty, because
+  otherwise the header can be forged.
+- The key itself is only ever sent to the LLM provider. No endpoint returns it, and provider error details stay in the
+  server log instead of the HTTP response.
+
 Tests and lint:
 
 ```bash
-.venv/Scripts/python -m pytest              # 65 tests
+.venv/Scripts/python -m pytest              # 79 tests
 .venv/Scripts/python -m ruff check .
 cd web && npm run typecheck
 ```
@@ -178,11 +214,12 @@ cd web && npm run typecheck
 
 | Method and path | Purpose |
 |---|---|
-| `POST /policies` | Multipart `file` (PDF or text) or `text`. Returns the coverage, page texts, `needs_human_review` and `review_fields`. |
+| `POST /auth/login` | `{code}`: the hourly access code. Returns a one-hour bearer token. Only when `ADMIN_TOKEN` is set. |
+| `POST /policies` | Multipart `file` (PDF or text) or `text`. Needs the bearer token when `ADMIN_TOKEN` is set. Returns the coverage, page texts, `needs_human_review` and `review_fields`. |
 | `GET /policies/{id}` | The stored policy. The review flags are recomputed with the current threshold. |
 | `POST /estimate` | `{policy_id, scenario}`. Returns payable, patient pays and the audit trail. Money is a decimal string. |
 | `GET /samples` | The three synthetic sample policies. |
-| `GET /health` | Liveness. |
+| `GET /health` | Liveness, whether an LLM is configured, and whether an access code is required. |
 
 Pasted text marks pages with a line such as `--- Page 2 ---`. Without markers it is read as page 1.
 
@@ -213,4 +250,5 @@ docs/      README screenshots
   wrong reading of it.
 - **Evaluation is small and in-house** (see above). There are no real insurer documents in the repo and none were used.
 - **Docker and Postgres are untested** on the author's machine.
-- **No auth, no multi-user concerns, no payments.** The `/estimate` result is an estimate, not a claim decision.
+- **Access is one shared hourly code, not user accounts.** There are no users, roles or audit of who did what, and
+  no payments. The `/estimate` result is an estimate, not a claim decision.

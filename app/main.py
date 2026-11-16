@@ -1,16 +1,19 @@
+import logging
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from app import access
 from app.config import get_settings
 from app.db import Policy, get_session
 from app.extract import annotate_review, extract_policy
 from app.llm import LLMError, LLMNotConfigured, get_llm
 from app.pdf import pdf_pages, split_pages
+from app.ratelimit import client_ip, limiter
 from app.schema import PolicyCoverage, iter_cited
 from engine import EngineError, EstimateRequest, EstimateResult, estimate
 
@@ -19,7 +22,26 @@ MAX_PAGES = 60
 SAMPLES_DIR = Path(__file__).resolve().parent.parent / "samples"
 WEB_DIST = Path(__file__).resolve().parent.parent / "web" / "dist"
 
+log = logging.getLogger("policylens")
+access.check_config()
 app = FastAPI(title="PolicyLens", version="0.1.0")
+
+
+def guard_llm(request: Request, authorization: str | None = Header(None)):
+    """Everything that can spend the LLM key goes through here: code, per-IP limit, global cap."""
+    access.require_session(authorization)
+    s = get_settings()
+    limiter.check(f"llm:{client_ip(request)}", s.extractions_per_hour, 3600, "extractions")
+    limiter.check("llm:all", s.llm_daily_limit, 86_400, "extractions today (daily cap reached)")
+
+
+def guard_estimate(request: Request):
+    # Cheap (no LLM), but still bounded.
+    limiter.check(f"est:{client_ip(request)}", 120, 60)
+
+
+class LoginIn(BaseModel):
+    code: str
 
 
 class PolicyOut(BaseModel):
@@ -52,10 +74,25 @@ def _out(row: Policy) -> PolicyOut:
 
 @app.get("/health")
 def health():
-    return {"ok": True, "llm_configured": bool(get_settings().llm_api_key)}
+    s = get_settings()
+    return {"ok": True, "llm_configured": bool(s.llm_api_key), "auth_required": bool(s.admin_token)}
 
 
-@app.post("/policies", response_model=PolicyOut, status_code=201)
+@app.post("/auth/login")
+def login(body: LoginIn, request: Request):
+    """Trade the current hourly access code for a one-hour session token."""
+    if not get_settings().admin_token:
+        raise HTTPException(404, "Access codes are not enabled on this server.")
+    limiter.check(f"login:{client_ip(request)}", 10, 900, "login attempts")
+    if not access.verify_code(body.code):
+        raise HTTPException(401, "That access code is not valid. Codes change every hour.")
+    token, exp = access.issue_session()
+    return {"token": token, "expires_at": exp}
+
+
+@app.post(
+    "/policies", response_model=PolicyOut, status_code=201, dependencies=[Depends(guard_llm)]
+)
 def create_policy(
     file: UploadFile | None = File(None),
     text: str | None = Form(None),
@@ -88,7 +125,8 @@ def create_policy(
     except LLMNotConfigured as e:
         raise HTTPException(503, str(e)) from e
     except LLMError as e:
-        raise HTTPException(502, str(e)) from e
+        log.warning("LLM request failed: %s", e)  # detail stays in the server log, not the response
+        raise HTTPException(502, "The language model request failed. Try again shortly.") from e
 
     row = Policy(
         source_name=name, model=llm.model, pages=pages, coverage=coverage.model_dump(mode="json")
@@ -106,7 +144,7 @@ def get_policy(policy_id: str, session: Session = Depends(get_session)):
     return _out(row)
 
 
-@app.post("/estimate", response_model=EstimateResult)
+@app.post("/estimate", response_model=EstimateResult, dependencies=[Depends(guard_estimate)])
 def post_estimate(req: EstimateRequest, session: Session = Depends(get_session)):
     row = session.get(Policy, req.policy_id)
     if not row:

@@ -45,6 +45,16 @@ def good_reply():
     }
 
 
+@pytest.fixture(autouse=True)
+def _fresh_limits(monkeypatch):
+    from app.ratelimit import limiter
+
+    monkeypatch.delenv("ADMIN_TOKEN", raising=False)  # a developer's .env must not leak into tests
+    limiter.reset()
+    yield
+    limiter.reset()
+
+
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 't.db'}")

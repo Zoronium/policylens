@@ -25,11 +25,19 @@ class Settings:
     llm_model: str
     database_url: str
     review_threshold: float
+    admin_token: str  # empty = access codes off (local dev). Set it on any public deployment.
+    extractions_per_hour: int  # per client IP, on the one endpoint that spends the LLM key
+    llm_daily_limit: int  # all clients together, rolling 24 hours: the spend ceiling
+    trust_proxy: bool  # read the client IP from X-Forwarded-For (only behind your own proxy)
 
 
 def get_settings() -> Settings:
     env = os.environ.get
     return Settings(
+        admin_token=env("ADMIN_TOKEN") or "",
+        extractions_per_hour=int(env("EXTRACTIONS_PER_HOUR") or 5),
+        llm_daily_limit=int(env("LLM_DAILY_LIMIT") or 100),
+        trust_proxy=(env("TRUST_PROXY") or "").lower() in {"1", "true", "yes"},
         llm_base_url=env("LLM_BASE_URL") or "https://api.openai.com/v1",
         llm_api_key=env("LLM_API_KEY") or "",
         llm_model=env("LLM_MODEL") or "gpt-4o-mini",
