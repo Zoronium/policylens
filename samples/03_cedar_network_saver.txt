@@ -1,0 +1,32 @@
+SYNTHETIC DOCUMENT - written for the PolicyLens demo. Fictional insurer, fictional product.
+
+CEDAR POINT HEALTH ASSURANCE (fictional)
+CUSTOMER INFORMATION SHEET - Network Saver Individual
+
+--- Page 1 ---
+Plan: Network Saver Individual
+Cover amount (Sum Insured): Rs. 3,00,000
+This is a network-only plan. Claims are payable only for treatment taken at hospitals on the insurer's network list.
+Room rent limit: Rs. 3,000 per day. If you choose a costlier room, all room-linked expenses are reduced in the same proportion.
+Intensive care: Rs. 5,000 per day.
+Co-pay: None.
+Deductible: Rs. 10,000 per claim.
+
+--- Page 2 ---
+Waiting periods
+- 45 days initial waiting period for all illnesses.
+- 48 months for pre-existing diseases.
+- 24 months for: cataract, hernia, piles, sinusitis.
+Treatment limits
+- Appendectomy: Rs. 60,000
+- Cataract: Rs. 30,000 per eye
+- Normal delivery: Rs. 35,000
+
+--- Page 3 ---
+Exclusions
+- Cosmetic surgery
+- Infertility and IVF
+- Treatment of obesity
+- Cost of spectacles and hearing aids
+- Alternative medicine
+- Injury from adventure sports
