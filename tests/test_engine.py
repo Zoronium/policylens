@@ -129,7 +129,7 @@ def test_sub_limit_caps_the_procedure_then_copay():
     assert r.payable == D("36000")
 
 
-def test_deductible_then_copay_then_sub_limit_order():
+def test_sub_limit_then_deductible_then_copay_order():
     p = policy(deductible=c(5000), co_pay_pct=c(20))
     r = estimate(p, scen("cataract", doctor=60000))
     # sub-limit 40000 -> less deductible 35000 -> 80% = 28000
@@ -189,3 +189,11 @@ def test_audit_trail_is_continuous_and_ends_at_the_payout(s):
     assert r.trail[-1].after == r.payable
     assert r.payable + r.patient_pays == r.total_billed
     assert all(isinstance(x, D) for x in (r.payable, r.patient_pays, r.total_billed))
+
+
+def test_rule_text_uses_indian_digit_grouping():
+    p = policy(sum_insured=c(1000000), co_pay_pct=c(0), room_rent_cap=c(None))
+    r = estimate(p, scen(room=3000, sum_insured_used=0))
+    assert "₹10,00,000.00" in step(r, "Sum insured ceiling").rule
+    p2 = policy(deductible=c("150000.50"), co_pay_pct=c(0))
+    assert "₹1,50,000.50" in step(estimate(p2, scen(room=3000)), "Deductible").rule

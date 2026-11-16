@@ -106,7 +106,7 @@ Docker (API and UI in one image; Postgres is optional):
 
 ```bash
 docker compose up --build                       # SQLite
-docker compose --profile postgres up --build    # with Postgres, set DATABASE_URL as in .env.example
+docker compose --profile postgres up --build    # with Postgres: put DATABASE_URL=postgresql+psycopg://policylens:policylens@postgres:5432/policylens in .env
 ```
 
 Tests and lint:

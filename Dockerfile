@@ -1,7 +1,8 @@
 FROM node:22-slim AS web
 WORKDIR /web
 COPY web/package.json web/package-lock.json ./
-RUN npm ci
+# npm install, not ci: a lockfile made on Windows can lack the Linux native bindings Vite needs.
+RUN npm install
 COPY web/ ./
 RUN npm run build
 

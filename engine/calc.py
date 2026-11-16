@@ -24,7 +24,14 @@ def q(x: Decimal) -> Decimal:
 
 
 def inr(x: Decimal) -> str:
-    return f"Rs {x:,.2f}"
+    """Rupees with Indian digit grouping (last 3 digits, then pairs): 1000000 -> ₹10,00,000.00."""
+    whole, frac = f"{q(x):.2f}".split(".")
+    sign, whole = ("-", whole[1:]) if whole.startswith("-") else ("", whole)
+    head, tail, groups = whole[:-3], whole[-3:], []
+    while head:
+        groups.insert(0, head[-2:])
+        head = head[:-2]
+    return f"{sign}₹{','.join([*groups, tail])}.{frac}"
 
 
 def norm(s: str) -> str:
