@@ -12,6 +12,7 @@ _PAGE_LINE = re.compile(
 
 def split_pages(text: str) -> list[str]:
     """Markers number the pages; a title block before "Page 1" belongs to page 1."""
+    text = text.replace("\r\n", "\n").replace("\r", "\n")  # browsers send CRLF from a textarea
     if _PAGE_LINE.search(text):
         head, *rest = _PAGE_LINE.split(text)
         rest[0] = f"{head.strip()}\n{rest[0]}"

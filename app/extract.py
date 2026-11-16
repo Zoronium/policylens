@@ -20,6 +20,11 @@ Pages are marked "=== PAGE n ===". Every field is an object:
 - confidence: 1.0 explicit and unambiguous; 0.5 or less when inferred, ambiguous or conflicting.
 - Money is a plain number in rupees (5 lakh = 500000, 1 crore = 10000000). No currency symbols.
 
+Every list item is a full cited object with the item under "value", e.g.
+  "sub_limits": [{"value": {"procedure": "cataract", "limit": 40000},
+                  "source_page": 2, "source_quote": "...", "confidence": 1.0}]
+Never put the item's keys beside source_page; they go inside "value".
+
 Fields:
 {
  "sum_insured": cited number,

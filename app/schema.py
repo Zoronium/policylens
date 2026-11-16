@@ -30,6 +30,20 @@ class Cited[T](BaseModel):
     quote_verified: bool | None = None  # quote found on the cited page?
     needs_review: bool = False
 
+    @model_validator(mode="before")
+    @classmethod
+    def _unflatten(cls, v):
+        """Models often write {"procedure": .., "source_page": ..} for list items instead of
+        {"value": {"procedure": ..}, "source_page": ..}. Move the stray keys under "value"."""
+        if isinstance(v, dict) and "value" not in v:
+            meta = ("source_page", "source_quote", "confidence")
+            rest = {
+                k: x for k, x in v.items() if k not in meta + ("quote_verified", "needs_review")
+            }
+            if rest:
+                return {**{k: v[k] for k in meta if k in v}, "value": rest}
+        return v
+
 
 class DailyCap(BaseModel):
     """A per-day cap: a flat rupee amount, or a percentage of the sum insured."""

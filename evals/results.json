@@ -1,0 +1,543 @@
+{
+  "model": "openai/gpt-oss-120b",
+  "run_at": "2026-11-16T10:21:18+00:00",
+  "threshold": 0.7,
+  "failed": [],
+  "summary": {
+    "policies": 10,
+    "field_accuracy": 0.9977,
+    "field_accuracy_by_field": {
+      "sum_insured": 1.0,
+      "room_rent_cap": 1.0,
+      "icu_cap": 1.0,
+      "co_pay_pct": 1.0,
+      "deductible": 1.0,
+      "initial_days": 1.0,
+      "pre_existing_months": 1.0,
+      "network_only": 1.0,
+      "sub_limits": 1.0,
+      "specific_illness": 1.0,
+      "exclusions": 0.975
+    },
+    "accuracy_on_unflagged_fields": 0.9976,
+    "citation_validity": 0.9809,
+    "citations_checked": 157,
+    "low_confidence_share": 0.0364,
+    "wrong_fields": 1,
+    "wrong_fields_flagged": 0
+  },
+  "policies": {
+    "01_harbor_shield_basic": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": true
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": false
+        }
+      },
+      "citations_valid": 15,
+      "citations_total": 17,
+      "warnings": []
+    },
+    "02_lakeview_family_floater": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": true
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": false
+        }
+      },
+      "citations_valid": 17,
+      "citations_total": 17,
+      "warnings": []
+    },
+    "03_cedar_network_saver": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": false
+        }
+      },
+      "citations_valid": 20,
+      "citations_total": 20,
+      "warnings": []
+    },
+    "04_sapphire_senior_care": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": false
+        }
+      },
+      "citations_valid": 14,
+      "citations_total": 14,
+      "warnings": [
+        "first answer failed validation; retried once"
+      ]
+    },
+    "05_orchid_super_topup": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": false
+        }
+      },
+      "citations_valid": 14,
+      "citations_total": 14,
+      "warnings": []
+    },
+    "06_tamarind_room_category": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": true
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": false
+        }
+      },
+      "citations_valid": 16,
+      "citations_total": 16,
+      "warnings": []
+    },
+    "07_juniper_maternity": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": true
+        }
+      },
+      "citations_valid": 16,
+      "citations_total": 17,
+      "warnings": []
+    },
+    "08_willow_flexi": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 0.75,
+          "flagged": false
+        }
+      },
+      "citations_valid": 17,
+      "citations_total": 17,
+      "warnings": []
+    },
+    "09_banyan_narrative": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": false
+        }
+      },
+      "citations_valid": 17,
+      "citations_total": 17,
+      "warnings": []
+    },
+    "10_aspen_compact": {
+      "fields": {
+        "sum_insured": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "room_rent_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "icu_cap": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "co_pay_pct": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "deductible": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "initial_days": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "pre_existing_months": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "network_only": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "sub_limits": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "specific_illness": {
+          "score": 1.0,
+          "flagged": false
+        },
+        "exclusions": {
+          "score": 1.0,
+          "flagged": false
+        }
+      },
+      "citations_valid": 8,
+      "citations_total": 8,
+      "warnings": []
+    }
+  }
+}

@@ -84,3 +84,24 @@ def test_prompt_shape_system_first_then_numbered_pages():
     extract_policy(PAGES, llm)
     assert llm.calls[0][0]["role"] == "system"
     assert "=== PAGE 1 ===" in llm.calls[0][1]["content"]
+
+
+def test_flattened_list_items_are_rewrapped_not_silently_dropped():
+    reply = good_reply()
+    reply["sub_limits"] = [
+        {
+            "procedure": "cataract",
+            "limit": 40000,
+            "source_page": 2,
+            "source_quote": "Cataract surgery is limited to Rs. 40,000 per eye",
+            "confidence": 0.9,
+        }
+    ]
+    cov = extract_policy(PAGES, StubLLM(reply))
+    assert cov.sub_limits[0].value.limit == 40000
+    assert cov.sub_limits[0].quote_verified is True
+
+
+def test_split_pages_handles_crlf_from_browser_textareas():
+    text = "intro\r\n--- Page 1 ---\r\nA\r\n--- Page 2 ---\r\nB"
+    assert split_pages(text) == ["intro\n\nA", "B"]
