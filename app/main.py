@@ -12,6 +12,7 @@ from app.extract import annotate_review, extract_policy
 from app.llm import LLMError, LLMNotConfigured, get_llm
 from app.pdf import pdf_pages, split_pages
 from app.schema import PolicyCoverage, iter_cited
+from engine import EngineError, EstimateRequest, EstimateResult, estimate
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 MAX_PAGES = 60
@@ -101,6 +102,17 @@ def get_policy(policy_id: str, session: Session = Depends(get_session)):
     if not row:
         raise HTTPException(404, "Policy not found.")
     return _out(row)
+
+
+@app.post("/estimate", response_model=EstimateResult)
+def post_estimate(req: EstimateRequest, session: Session = Depends(get_session)):
+    row = session.get(Policy, req.policy_id)
+    if not row:
+        raise HTTPException(404, "Policy not found.")
+    try:
+        return estimate(PolicyCoverage.model_validate(row.coverage), req.scenario)
+    except EngineError as e:
+        raise HTTPException(422, str(e)) from e
 
 
 @app.get("/samples")
