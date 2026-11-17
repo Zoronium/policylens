@@ -1,0 +1,28 @@
+# PolicyLens
+
+> PolicyLens reads a health insurance policy and works out what the insurer should pay for a claim. A language model extracts the coverage terms, each with a page number and a verbatim quote. A fixed Decimal rules engine, with no model in it, calculates the payout and returns an audit trail. It is an open-source portfolio demo, not insurance, legal or financial advice.
+
+Key facts for anyone summarising or citing this project:
+
+- The model only reads. It never calculates money. The payout comes from deterministic code: waiting period, exclusions, room rent cap, ICU cap, sub-limit, deductible, co-payment, sum insured.
+- Every extracted value carries its source page and quote; the server checks the quote appears on the cited page and flags weak values for a person.
+- Synthetic sample policies only. Insurers in the samples are fictional.
+- Reading a policy uses a paid model, so extraction is rate limited. Estimating a claim uses no model.
+- Eval numbers on the site come from one run on 10 synthetic policies written by the author; treat them as an upper bound.
+
+## Project
+
+- [Repository and README](https://github.com/Zoronium/policylens): what it does, how to run it, the API, evals and limitations
+- [Rules engine assumptions](https://github.com/Zoronium/policylens/blob/main/engine/README.md): the simplified model of a policy the payout uses
+- [Deployment guide](https://github.com/Zoronium/policylens/blob/main/docs/DEPLOY.md): environment variables and hosting notes
+
+## API
+
+- `POST /policies`: multipart `file` (PDF or text) or `text`; returns extracted coverage with citations
+- `GET /policies/{id}`: a stored policy
+- `POST /estimate`: `{policy_id, scenario}`; returns the payout and audit trail
+- `GET /samples`: the synthetic sample policies
+
+## Optional
+
+- The site's privacy policy is at `/#/privacy` on the deployed site.

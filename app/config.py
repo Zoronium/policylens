@@ -30,6 +30,7 @@ class Settings:
     trust_proxy: bool  # read the client IP from X-Forwarded-For (only behind your own proxy)
     mongodb_uri: str  # set = policies live in MongoDB; empty = SQL via database_url
     mongodb_db: str
+    public_url: str  # https://your.domain, for absolute URLs in sitemap.xml and robots.txt
     clerk_publishable_key: str  # public by design; the API only needs its domain to verify tokens
 
 
@@ -46,5 +47,6 @@ def get_settings() -> Settings:
         review_threshold=float(env("REVIEW_THRESHOLD") or 0.7),
         mongodb_uri=env("MONGODB_URI") or "",
         mongodb_db=env("MONGODB_DB") or "policylens",
+        public_url=(env("PUBLIC_URL") or "").rstrip("/"),
         clerk_publishable_key=env("CLERK_PUBLISHABLE_KEY") or "",
     )

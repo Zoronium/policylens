@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -167,6 +167,29 @@ def post_estimate(
         return estimate(PolicyCoverage.model_validate(row.coverage), req.scenario)
     except EngineError as e:
         raise HTTPException(422, str(e)) from e
+
+
+def _site_url(request: Request) -> str:
+    """PUBLIC_URL when set (correct behind a proxy); else the URL this request came in on."""
+    return get_settings().public_url or str(request.base_url).rstrip("/")
+
+
+@app.get("/robots.txt", include_in_schema=False)
+def robots(request: Request):
+    body = f"User-agent: *\nAllow: /\n\nSitemap: {_site_url(request)}/sitemap.xml\n"
+    return Response(body, media_type="text/plain")
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap(request: Request):
+    # One URL: the pages are #/hash routes, which search engines treat as the home page.
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"  <url><loc>{_site_url(request)}/</loc></url>\n"
+        "</urlset>\n"
+    )
+    return Response(body, media_type="application/xml")
 
 
 @app.get("/samples")
