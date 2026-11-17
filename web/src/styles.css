@@ -524,7 +524,8 @@ input[aria-invalid="true"] {
 .samples li {
   border-bottom: 1px solid var(--line);
 }
-.samples button {
+.samples button,
+.samples a {
   display: grid;
   gap: 2px;
   width: 100%;
@@ -535,9 +536,11 @@ input[aria-invalid="true"] {
   cursor: pointer;
   font: inherit;
   color: inherit;
+  text-decoration: none;
   border-radius: 4px;
 }
-.samples button:hover {
+.samples button:hover,
+.samples a:hover {
   background: var(--surface);
 }
 .s-name {

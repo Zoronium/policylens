@@ -96,12 +96,28 @@ export interface Sample {
   text: string;
 }
 
+export interface PolicySummary {
+  id: string;
+  created_at: string;
+  source_name: string | null;
+  needs_human_review: boolean;
+}
+
 export class ApiError extends Error {}
+
+// Set by <AccountProvider/> when sign-in is configured; every call then carries the Clerk session token.
+let getToken: () => Promise<string | null> = async () => null;
+export const setTokenGetter = (fn: typeof getToken) => {
+  getToken = fn;
+};
 
 async function call<T>(url: string, init?: RequestInit): Promise<T> {
   let r: Response;
   try {
-    r = await fetch(url, init);
+    const token = await getToken();
+    const headers = new Headers(init?.headers);
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    r = await fetch(url, { ...init, headers });
   } catch {
     throw new ApiError("Cannot reach the API. Is the server running on port 8000?");
   }
@@ -122,6 +138,7 @@ async function call<T>(url: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   samples: () => call<Sample[]>("/samples"),
+  mine: () => call<PolicySummary[]>("/me/policies"),
   getPolicy: (id: string) => call<Policy>(`/policies/${id}`),
   createPolicy: (form: FormData) => call<Policy>("/policies", { method: "POST", body: form }),
   estimate: (policy_id: string, scenario: Scenario) =>

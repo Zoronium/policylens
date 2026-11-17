@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, type Policy } from "./api";
+import { AccountNav, ACCOUNTS } from "./account";
 import Coverage from "./screens/Coverage";
 import Estimate from "./screens/Estimate";
+import Mine from "./screens/Mine";
 import Upload from "./screens/Upload";
 import Home from "./site/Home";
 import How from "./site/How";
@@ -11,6 +13,7 @@ type Route =
   | { screen: "home" }
   | { screen: "how" }
   | { screen: "upload" }
+  | { screen: "mine" }
   | { screen: "coverage" | "estimate"; id: string };
 
 function parseHash(): Route {
@@ -19,6 +22,7 @@ function parseHash(): Route {
   if (m) return { screen: m[2] ? "estimate" : "coverage", id: m[1] };
   if (h === "#/try") return { screen: "upload" };
   if (h === "#/how") return { screen: "how" };
+  if (h === "#/mine" && ACCOUNTS) return { screen: "mine" };
   return { screen: "home" };
 }
 
@@ -26,6 +30,7 @@ const TITLES = {
   home: "PolicyLens",
   how: "How it works",
   upload: "Add a policy",
+  mine: "My policies",
   coverage: "Extracted coverage",
   estimate: "Estimate a claim",
 };
@@ -96,6 +101,7 @@ export default function App() {
                 Add a policy
               </a>
             )}
+            <AccountNav current={route.screen === "mine"} />
           </nav>
         </div>
       </header>
@@ -116,6 +122,7 @@ export default function App() {
       <main id="main" tabIndex={-1}>
         {route.screen === "home" && <Home />}
         {route.screen === "how" && <How />}
+        {route.screen === "mine" && <Mine />}
         {route.screen === "upload" && <Upload onDone={(p) => { setPolicy(p); go(`#/p/${p.id}`); }} />}
         {id && loadError && (
           <div className="page">
