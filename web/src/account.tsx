@@ -1,6 +1,8 @@
 import { ClerkProvider, Show, SignInButton, UserButton, useAuth } from "@clerk/react";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { setTokenGetter } from "./api";
+import { useConsent } from "./consent";
+import posthog, { posthogEnabled } from "./posthog";
 
 const KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 
@@ -8,8 +10,31 @@ const KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 export const ACCOUNTS = Boolean(KEY);
 
 function Bridge({ children }: { children: ReactNode }) {
-  const { getToken } = useAuth();
+  const { getToken, isLoaded, isSignedIn, userId } = useAuth();
+  const identifiedUserId = useRef<string | null>(null);
+  const consent = useConsent(); // re-run identify when the visitor accepts or withdraws
+
   useEffect(() => setTokenGetter(() => getToken()), [getToken]);
+
+  useEffect(() => {
+    if (!posthogEnabled || !isLoaded) return;
+
+    if (isSignedIn && userId) {
+      if (identifiedUserId.current !== userId) {
+        if (identifiedUserId.current) posthog.reset();
+
+        posthog.identify(userId); // the Clerk id only: no email or name leaves for analytics
+        identifiedUserId.current = userId;
+      }
+      return;
+    }
+
+    if (identifiedUserId.current) {
+      posthog.reset();
+      identifiedUserId.current = null;
+    }
+  }, [isLoaded, isSignedIn, userId, consent]);
+
   return children;
 }
 

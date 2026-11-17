@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, type Policy } from "./api";
 import { AccountNav, ACCOUNTS } from "./account";
+import { useConsent } from "./consent";
 import Coverage from "./screens/Coverage";
 import Estimate from "./screens/Estimate";
 import Mine from "./screens/Mine";
 import Upload from "./screens/Upload";
+import ConsentBanner from "./site/ConsentBanner";
 import Home from "./site/Home";
+import Privacy from "./site/Privacy";
+import { analyticsConfigured } from "./posthog";
 import How from "./site/How";
 import { Alert, Skeleton } from "./ui";
 
@@ -14,6 +18,7 @@ type Route =
   | { screen: "how" }
   | { screen: "upload" }
   | { screen: "mine" }
+  | { screen: "privacy" }
   | { screen: "coverage" | "estimate"; id: string };
 
 function parseHash(): Route {
@@ -22,6 +27,7 @@ function parseHash(): Route {
   if (m) return { screen: m[2] ? "estimate" : "coverage", id: m[1] };
   if (h === "#/try") return { screen: "upload" };
   if (h === "#/how") return { screen: "how" };
+  if (h === "#/privacy") return { screen: "privacy" };
   if (h === "#/mine" && ACCOUNTS) return { screen: "mine" };
   return { screen: "home" };
 }
@@ -31,6 +37,7 @@ const TITLES = {
   how: "How it works",
   upload: "Add a policy",
   mine: "My policies",
+  privacy: "Privacy policy",
   coverage: "Extracted coverage",
   estimate: "Estimate a claim",
 };
@@ -39,6 +46,8 @@ export default function App() {
   const [route, setRoute] = useState<Route>(parseHash);
   const [policy, setPolicy] = useState<Policy | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const consent = useConsent();
+  const [askAgain, setAskAgain] = useState(false);
 
   useEffect(() => {
     const on = () => setRoute(parseHash());
@@ -123,6 +132,7 @@ export default function App() {
         {route.screen === "home" && <Home />}
         {route.screen === "how" && <How />}
         {route.screen === "mine" && <Mine />}
+        {route.screen === "privacy" && <Privacy onCookieSettings={() => setAskAgain(true)} />}
         {route.screen === "upload" && <Upload onDone={(p) => { setPolicy(p); go(`#/p/${p.id}`); }} />}
         {id && loadError && (
           <div className="page">
@@ -149,8 +159,17 @@ export default function App() {
             The model reads the document. A fixed set of rules calculates the payout. All sample policies are
             synthetic.
           </span>
+          <span className="foot-links">
+            <a href="#/privacy">Privacy</a>
+            {analyticsConfigured && (
+              <button type="button" className="linklike" onClick={() => setAskAgain(true)}>
+                Cookie settings
+              </button>
+            )}
+          </span>
         </div>
       </footer>
+      {analyticsConfigured && (consent === null || askAgain) && <ConsentBanner onClose={() => setAskAgain(false)} />}
     </>
   );
 }

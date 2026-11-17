@@ -1,6 +1,7 @@
 import { useId, useMemo, useState, type FormEvent } from "react";
 import { api, ApiError, type AuditStep, type Charges, type Estimate as Result, type Policy, type Scenario } from "../api";
 import { drop, inr, rupee } from "../format";
+import posthog, { posthogEnabled } from "../posthog";
 import { Alert, Icon, Skeleton } from "../ui";
 
 const CHARGE_LABELS: [keyof Charges, string][] = [
@@ -188,8 +189,19 @@ export default function Estimate({ policy, onBack }: { policy: Policy; onBack: (
     setBusy(true);
     setError(null);
     try {
-      setResult(await api.estimate(policy.id, toScenario(form)));
+      const estimate = await api.estimate(policy.id, toScenario(form));
+      if (posthogEnabled) {
+        const appliedRuleCount = estimate.trail.filter((step) => step.outcome === "applied").length;
+        const rejectedRuleCount = estimate.trail.filter((step) => step.outcome === "rejected").length;
+        posthog.capture("claim_estimate_calculated", {
+          estimate_status: estimate.status,
+          applied_rule_count: appliedRuleCount,
+          rejected_rule_count: rejectedRuleCount,
+        });
+      }
+      setResult(estimate);
     } catch (err) {
+      if (posthogEnabled) posthog.capture("claim_estimate_failed");
       setResult(null);
       setError(err instanceof ApiError ? err.message : "Something went wrong.");
     } finally {

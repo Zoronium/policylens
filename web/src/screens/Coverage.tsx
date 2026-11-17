@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import type { Cited, DailyCap, Policy } from "../api";
 import { days, inr, months, pct, rupee } from "../format";
+import posthog, { posthogEnabled } from "../posthog";
 import { Alert, Icon, ReviewChip } from "../ui";
 
 interface Row {
@@ -168,6 +169,14 @@ export default function Coverage({ policy, onEstimate }: { policy: Policy; onEst
   const stated = all.filter((r) => r.stated);
   const flagged = all.filter((r) => r.cited.needs_review);
   const name = policy.source_name ?? "Pasted text";
+  const startEstimate = () => {
+    if (posthogEnabled)
+      posthog.capture("claim_estimate_started", {
+        needs_human_review: policy.needs_human_review,
+        review_field_count: policy.review_fields.length,
+      });
+    onEstimate();
+  };
 
   return (
     <div className="page">
@@ -179,7 +188,7 @@ export default function Coverage({ policy, onEstimate }: { policy: Policy; onEst
             <code>{policy.model}</code>
           </p>
         </div>
-        <button className="btn btn-primary" onClick={onEstimate} disabled={policy.coverage.sum_insured.value === null}>
+        <button className="btn btn-primary" onClick={startEstimate} disabled={policy.coverage.sum_insured.value === null}>
           Estimate a claim <Icon name="arrow" />
         </button>
       </div>
@@ -256,7 +265,14 @@ export default function Coverage({ policy, onEstimate }: { policy: Policy; onEst
                         className="lrow-btn"
                         aria-expanded={isOpen}
                         aria-controls={`src-${r.key}`}
-                        onClick={() => setOpen(isOpen ? null : r.key)}
+                        onClick={() => {
+                          if (!isOpen && posthogEnabled)
+                            posthog.capture("coverage_source_opened", {
+                              coverage_field: r.key,
+                              needs_human_review: c.needs_review,
+                            });
+                          setOpen(isOpen ? null : r.key);
+                        }}
                       >
                         <span className="f-label">{r.label}</span>
                         <span className={`f-value ${r.stated ? "" : "unstated"}`}>{r.value}</span>

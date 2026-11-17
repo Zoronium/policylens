@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, type Policy, type Sample } from "../api";
+import posthog, { posthogEnabled } from "../posthog";
 import Mascot from "../site/Mascot";
 import { Alert, Icon, Skeleton } from "../ui";
 
@@ -48,8 +49,18 @@ export default function Upload({ onDone }: { onDone: (p: Policy) => void }) {
     if (mode === "paste") form.append("text", text);
     else form.append("file", file!);
     try {
-      onDone(await api.createPolicy(form));
+      const policy = await api.createPolicy(form);
+      if (posthogEnabled) {
+        posthog.capture("policy_extraction_completed", {
+          input_method: mode,
+          page_count: policy.pages.length,
+          needs_human_review: policy.needs_human_review,
+          review_field_count: policy.review_fields.length,
+        });
+      }
+      onDone(policy);
     } catch (err) {
+      if (posthogEnabled) posthog.capture("policy_extraction_failed", { input_method: mode });
       setError(err instanceof ApiError ? err.message : "Something went wrong.");
       setBusy(false);
     }
@@ -165,6 +176,7 @@ export default function Upload({ onDone }: { onDone: (p: Policy) => void }) {
                   <button
                     type="button"
                     onClick={() => {
+                      if (posthogEnabled) posthog.capture("sample_policy_selected");
                       setMode("paste");
                       setText(s.text);
                       setError(null);

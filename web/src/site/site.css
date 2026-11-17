@@ -334,3 +334,41 @@ a.btn {
   align-items: center;
   gap: 16px;
 }
+
+/* ---------- Footer links and long-form text (privacy) ---------- */
+.foot-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+.foot-links {
+  display: inline-flex;
+  gap: 16px;
+}
+.foot-links a,
+.linklike {
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.prose {
+  max-width: 720px;
+}
+.prose h2 {
+  margin: 32px 0 8px;
+  font-size: 1.125rem;
+}
+.prose ul {
+  padding-left: 1.2em;
+}
+.prose li {
+  margin-bottom: 8px;
+}

@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { AccountProvider } from "./account";
 import App from "./App";
+import "./consent";
 import "./stageshow/kit/stageshow.css";
 import "./styles.css";
 
