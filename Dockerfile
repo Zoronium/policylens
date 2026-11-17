@@ -4,6 +4,13 @@ COPY web/package.json web/package-lock.json ./
 # npm install, not ci: a lockfile made on Windows can lack the Linux native bindings Vite needs.
 RUN npm install
 COPY web/ ./
+# Vite bakes the (public) Clerk key into the bundle; pass it as a build arg. Empty = no sign-in UI.
+ARG VITE_CLERK_PUBLISHABLE_KEY=
+ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+# Same for the (public) PostHog project token and host. Empty = no analytics.
+ARG VITE_POSTHOG_KEY=
+ARG VITE_POSTHOG_HOST=
+ENV VITE_POSTHOG_KEY=$VITE_POSTHOG_KEY VITE_POSTHOG_HOST=$VITE_POSTHOG_HOST
 RUN npm run build
 
 FROM python:3.12-slim

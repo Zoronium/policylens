@@ -26,14 +26,25 @@ Add these under **Environment Variables** (tick "Runtime only"; mark `LLM_API_KE
 | `TRUST_PROXY` | `1` (Coolify's proxy sits in front, so the real client IP comes from `X-Forwarded-For`) |
 | `EXTRACTIONS_PER_HOUR` | `5` (per client IP) |
 | `LLM_DAILY_LIMIT` | `100` (all visitors together; your spend ceiling) |
-| `DATABASE_URL` | `sqlite:////data/policylens.db` |
+| `MONGODB_URI` | your Atlas connection string (secret). Set it and policies live in MongoDB; leave it out to use SQLite below |
+| `PUBLIC_URL` | `https://your.domain`: the absolute address used in `/sitemap.xml` and `/robots.txt` (Coolify's proxy hides the real scheme) |
+| `MONGODB_DB` | `policylens` |
+| `CLERK_PUBLISHABLE_KEY` | your Clerk publishable key (public by design) |
+| `VITE_CLERK_PUBLISHABLE_KEY` | the same value, and tick **Build Variable** too: the UI bakes it in at build time |
+| `VITE_POSTHOG_KEY` | optional: your PostHog project token (public by design). Tick **Build Variable**: baked in at build time |
+| `VITE_POSTHOG_HOST` | optional: your PostHog host, for example `https://us.i.posthog.com` (also a Build Variable) |
+| `DATABASE_URL` | `sqlite:////data/policylens.db` (only used when `MONGODB_URI` is empty) |
 
-There is no login. Anyone with the link can run up to `EXTRACTIONS_PER_HOUR` extractions per IP, and `LLM_DAILY_LIMIT`
+Sign-in is optional and only scopes saved policies to their owner. Anyone with the link can run up to `EXTRACTIONS_PER_HOUR` extractions per IP, and `LLM_DAILY_LIMIT`
 in total per day, before getting 429. Set a spend cap at your LLM provider before you share the link.
 
 ## 3. Storage, domain, health
 
-- **Persistent Storage:** add a volume with destination path `/data`, so stored policies survive redeploys.
+- **Persistent Storage:** add a volume with destination path `/data`, so stored policies survive redeploys. Not needed
+  when policies are in MongoDB.
+- **Atlas Network Access:** allow the Coolify server's public IP (or `0.0.0.0/0` if you accept the wider exposure).
+  Atlas answers a blocked IP with a TLS handshake error, not a clear message.
+- **Clerk:** add your domain to the instance's allowed origins, and switch on the sign-in methods you want.
 - **Domains:** set your domain; Coolify issues the certificate.
 - **Health check:** path `/health`, port `8000`.
 - **Replicas: exactly one.** Rate-limit counters live in memory, so a second replica would double every limit.
