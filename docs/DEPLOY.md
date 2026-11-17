@@ -1,6 +1,7 @@
 # Deploying PolicyLens on Coolify
 
-PolicyLens ships as one image (API and built UI on port 8000). These steps use Coolify's Dockerfile build pack.
+PolicyLens ships as one image (API and built UI on port 8000). These steps use Coolify's Dockerfile build pack. (If you use the Docker Compose pack instead, the compose file
+publishes host port 8100, because Coolify's dashboard already holds 8000.)
 Nothing here contains a secret: you paste the values into Coolify yourself.
 
 Status: the image build has not been run end to end on the author's machine (Docker was unavailable). The first

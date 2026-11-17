@@ -186,8 +186,8 @@ UI, built and served by the API on one port: `cd web && npm run build`, then ope
 Pages are hash routes: `#/` home, `#/how` how it works, `#/try` add a policy, `#/p/<id>` and `#/p/<id>/estimate` for a
 stored policy.
 
-Docker (API and UI in one image; Postgres is optional). The compose file is validated but the image build has not
-been run on the author's machine:
+Docker (API and UI in one image; Postgres is optional). The image builds and starts on Coolify; the Postgres profile is
+untested. The app is published on http://localhost:8100 (set `HOST_PORT` to change it):
 
 ```bash
 docker compose up --build                       # SQLite
