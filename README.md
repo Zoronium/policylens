@@ -196,17 +196,8 @@ docker compose --profile postgres up --build    # with Postgres: put DATABASE_UR
 
 ### Protecting the LLM key
 
-Reading a policy spends your LLM key, so on a public server that endpoint is guarded. Estimating a claim uses no
-model and stays open.
-
-1. Set `ADMIN_TOKEN` in `.env` (16+ random characters). With it empty there is no login, which is fine locally and
-   wrong for a public server.
-2. Get the current access code on the server: `python -m app.access` (in Docker:
-   `docker compose exec api python -m app.access`). It prints something like `AJXJ-YOQA` and when it stops working.
-   The code is derived from `ADMIN_TOKEN` and the current UTC hour, so it changes on the hour and nobody can compute
-   it without the token. `--next` prints the next hour's code.
-3. A visitor enters the code on the Add a policy screen. The server trades it for a signed session token that lasts
-   one hour. Without a valid token, `POST /policies` returns 401.
+Reading a policy spends your LLM key. There is no login: the one endpoint that spends it is rate limited instead.
+Estimating a claim uses no model.
 
 Limits, all returning 429 with `Retry-After`:
 
@@ -214,16 +205,15 @@ Limits, all returning 429 with `Retry-After`:
 |---|---|---|
 | Extractions per client IP per hour | 5 | `EXTRACTIONS_PER_HOUR` |
 | Extractions across everyone, rolling 24 h (the spend ceiling) | 100 | `LLM_DAILY_LIMIT` |
-| Login attempts per IP per 15 min | 10 | fixed |
 | Estimates per IP per minute | 120 | fixed |
 
 What this does not do:
 
-- It limits who can spend the key and how much. It does not protect a key that leaks some other way (a committed
-  `.env`, a shared screenshot, logs). Keep `.env` out of git and images (both are already excluded here), rotate the
-  key if it ever appears anywhere, and set a spend cap at your LLM provider as the real backstop.
-- Whoever has the code can use it until it changes, and a session lasts an hour after login, so a code shared late in
-  the hour can be used for up to about two more hours.
+- Anyone can use the extraction endpoint up to those limits, and strangers can use up the daily cap so you cannot.
+  Set a spend cap at your LLM provider as the real backstop. A hosted demo that must stay usable needs a login; an
+  earlier version had an hourly access code (commit `85d6288`) and can be restored from history.
+- It does not protect a key that leaks some other way (a committed `.env`, a shared screenshot, logs). Keep `.env` out
+  of git and images (both are already excluded here) and rotate the key if it ever appears anywhere.
 - Counters are in memory: they reset when the server restarts and are not shared between workers. Run one worker.
 - Behind a reverse proxy set `TRUST_PROXY=1` so the real client IP is used; without a proxy leave it empty, because
   otherwise the header can be forged.
@@ -231,12 +221,12 @@ What this does not do:
   server log instead of the HTTP response.
 
 Deploying (Coolify, Dockerfile build pack): see [docs/DEPLOY.md](docs/DEPLOY.md). It lists every environment
-variable, the volume, the single-replica rule and how to get the hourly access code.
+variable, the volume and the single-replica rule.
 
 Tests and lint:
 
 ```bash
-.venv/Scripts/python -m pytest              # 79 tests
+.venv/Scripts/python -m pytest              # 70 tests
 .venv/Scripts/python -m ruff check .
 cd web && npm run typecheck
 ```
@@ -245,12 +235,11 @@ cd web && npm run typecheck
 
 | Method and path | Purpose |
 |---|---|
-| `POST /auth/login` | `{code}`: the hourly access code. Returns a one-hour bearer token. Only when `ADMIN_TOKEN` is set. |
-| `POST /policies` | Multipart `file` (PDF or text) or `text`. Needs the bearer token when `ADMIN_TOKEN` is set. Returns the coverage, page texts, `needs_human_review` and `review_fields`. |
+| `POST /policies` | Multipart `file` (PDF or text) or `text`. Rate limited. Returns the coverage, page texts, `needs_human_review` and `review_fields`. |
 | `GET /policies/{id}` | The stored policy. The review flags are recomputed with the current threshold. |
 | `POST /estimate` | `{policy_id, scenario}`. Returns payable, patient pays and the audit trail. Money is a decimal string. |
 | `GET /samples` | The three synthetic sample policies. |
-| `GET /health` | Liveness, whether an LLM is configured, and whether an access code is required. |
+| `GET /health` | Liveness, and whether an LLM is configured. |
 
 Pasted text marks pages with a line such as `--- Page 2 ---`. Without markers it is read as page 1.
 
@@ -288,5 +277,4 @@ docs/      README screenshots
   line about the kit's own window title bar (its title is deliberately offset 36 px to look centred). Motion was
   judged from contact sheets and not watched live on a real phone.
 - **Docker and Postgres are untested** on the author's machine.
-- **Access is one shared hourly code, not user accounts.** There are no users, roles or audit of who did what, and
-  no payments. The `/estimate` result is an estimate, not a claim decision.
+- **No accounts or login.** There are no users, roles or audit of who did what, and no payments. The `/estimate` result is an estimate, not a claim decision.

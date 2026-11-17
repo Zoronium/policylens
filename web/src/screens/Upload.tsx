@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { api, ApiError, hasSession, type Policy, type Sample } from "../api";
+import { api, ApiError, type Policy, type Sample } from "../api";
 import Mascot from "../site/Mascot";
 import { Alert, Icon, Skeleton } from "../ui";
 
@@ -24,13 +24,10 @@ export default function Upload({ onDone }: { onDone: (p: Policy) => void }) {
   const [error, setError] = useState<string | null>(null);
   const [samples, setSamples] = useState<Sample[] | null>(null);
   const [samplesError, setSamplesError] = useState(false);
-  const [needCode, setNeedCode] = useState(false);
-  const [code, setCode] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     api.samples().then(setSamples).catch(() => setSamplesError(true));
-    api.health().then((h) => setNeedCode(h.auth_required && !hasSession())).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -40,7 +37,7 @@ export default function Upload({ onDone }: { onDone: (p: Policy) => void }) {
     return () => window.clearInterval(t);
   }, [busy]);
 
-  const canSubmit = (mode === "paste" ? text.trim().length > 0 : file !== null) && (!needCode || code.trim().length > 0);
+  const canSubmit = mode === "paste" ? text.trim().length > 0 : file !== null;
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -51,14 +48,8 @@ export default function Upload({ onDone }: { onDone: (p: Policy) => void }) {
     if (mode === "paste") form.append("text", text);
     else form.append("file", file!);
     try {
-      if (needCode) {
-        await api.login(code);
-        setNeedCode(false);
-        setCode("");
-      }
       onDone(await api.createPolicy(form));
     } catch (err) {
-      if (err instanceof ApiError && err.status === 401) setNeedCode(true);
       setError(err instanceof ApiError ? err.message : "Something went wrong.");
       setBusy(false);
     }
@@ -146,25 +137,6 @@ export default function Upload({ onDone }: { onDone: (p: Policy) => void }) {
                 />
               </div>
               <p className="hint">Text-based PDFs only, up to 10 MB. Scanned pages need OCR first.</p>
-            </div>
-          )}
-
-          {needCode && (
-            <div className="field">
-              <label htmlFor="access-code">Access code</label>
-              <input
-                id="access-code"
-                type="text"
-                autoComplete="one-time-code"
-                spellCheck={false}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="XXXX-XXXX"
-              />
-              <p className="hint">
-                Reading a policy uses a paid model, so it needs a code. Codes change every hour; ask the owner for the
-                current one. Estimating a claim does not need a code.
-              </p>
             </div>
           )}
 

@@ -96,39 +96,15 @@ export interface Sample {
   text: string;
 }
 
-export class ApiError extends Error {
-  status = 0;
-}
+export class ApiError extends Error {}
 
-// The session token (one hour) lives in sessionStorage: gone when the tab closes, never in a URL.
-const TOKEN_KEY = "pl_session";
-function readToken(): { token: string; exp: number } | null {
-  try {
-    const t = JSON.parse(sessionStorage.getItem(TOKEN_KEY) ?? "null");
-    return t && t.exp * 1000 > Date.now() ? t : null;
-  } catch {
-    return null;
-  }
-}
-export const hasSession = () => readToken() !== null;
-const clearSession = () => {
-  try {
-    sessionStorage.removeItem(TOKEN_KEY);
-  } catch {
-    /* storage unavailable */
-  }
-};
-
-async function call<T>(url: string, init: RequestInit = {}): Promise<T> {
+async function call<T>(url: string, init?: RequestInit): Promise<T> {
   let r: Response;
-  const session = readToken();
-  if (session) init = { ...init, headers: { ...init.headers, Authorization: `Bearer ${session.token}` } };
   try {
     r = await fetch(url, init);
   } catch {
     throw new ApiError("Cannot reach the API. Is the server running on port 8000?");
   }
-  if (r.status === 401) clearSession();
   if (!r.ok) {
     let detail = `Request failed (${r.status}).`;
     try {
@@ -139,27 +115,12 @@ async function call<T>(url: string, init: RequestInit = {}): Promise<T> {
     } catch {
       /* keep the generic message */
     }
-    const err = new ApiError(detail);
-    err.status = r.status;
-    throw err;
+    throw new ApiError(detail);
   }
   return r.json() as Promise<T>;
 }
 
 export const api = {
-  health: () => call<{ ok: boolean; llm_configured: boolean; auth_required: boolean }>("/health"),
-  login: async (code: string) => {
-    const r = await call<{ token: string; expires_at: number }>("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
-    });
-    try {
-      sessionStorage.setItem(TOKEN_KEY, JSON.stringify({ token: r.token, exp: r.expires_at }));
-    } catch {
-      /* storage unavailable: the code will be asked for again */
-    }
-  },
   samples: () => call<Sample[]>("/samples"),
   getPolicy: (id: string) => call<Policy>(`/policies/${id}`),
   createPolicy: (form: FormData) => call<Policy>("/policies", { method: "POST", body: form }),

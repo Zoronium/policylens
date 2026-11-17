@@ -16,20 +16,20 @@ Coolify build is its first real test. If it fails, the build log names the step;
 
 ## 2. Environment variables
 
-Add these under **Environment Variables** (tick "Runtime only"; mark the two secrets as secrets):
+Add these under **Environment Variables** (tick "Runtime only"; mark `LLM_API_KEY` as a secret):
 
 | Variable | Value |
 |---|---|
 | `LLM_BASE_URL` | your provider's OpenAI-compatible URL |
 | `LLM_API_KEY` | your key (secret) |
 | `LLM_MODEL` | for example `openai/gpt-oss-120b` |
-| `ADMIN_TOKEN` | 24+ random characters (secret). Generate: `python -c "import secrets; print(secrets.token_urlsafe(24))"` |
 | `TRUST_PROXY` | `1` (Coolify's proxy sits in front, so the real client IP comes from `X-Forwarded-For`) |
 | `EXTRACTIONS_PER_HOUR` | `5` (per client IP) |
 | `LLM_DAILY_LIMIT` | `100` (all visitors together; your spend ceiling) |
 | `DATABASE_URL` | `sqlite:////data/policylens.db` |
 
-Without `ADMIN_TOKEN` anyone can spend your LLM key. Do not deploy without it.
+There is no login. Anyone with the link can run up to `EXTRACTIONS_PER_HOUR` extractions per IP, and `LLM_DAILY_LIMIT`
+in total per day, before getting 429. Set a spend cap at your LLM provider before you share the link.
 
 ## 3. Storage, domain, health
 
@@ -44,29 +44,16 @@ After the first deploy:
 
 ```bash
 curl https://YOUR-DOMAIN/health
-# {"ok":true,"llm_configured":true,"auth_required":true}
-
-curl -i -X POST https://YOUR-DOMAIN/policies -F "text=hello"
-# HTTP 401: an access code is required
+# {"ok":true,"llm_configured":true}
 ```
 
-If `auth_required` is `false`, `ADMIN_TOKEN` did not reach the container: fix it before sharing the link.
-
-## 5. Get the hourly access code
-
-Open the app's **Terminal** in Coolify and run:
-
-```bash
-python -m app.access
-```
-
-It prints the current code and when it stops working. Give it to a visitor; they enter it on the Add a policy screen.
-Home, How it works and claim estimates work without a code.
+Open the site, go to Try it, pick a sample and extract it. After `EXTRACTIONS_PER_HOUR` extractions from one
+address the next one should answer 429.
 
 ## Limits worth knowing
 
 - Behind Cloudflare's orange-cloud proxy every visitor can arrive from a few Cloudflare addresses, which makes the
   per-IP limit coarse. The daily cap still holds. Prefer a DNS-only record.
-- Set a spend cap at your LLM provider as well. This service limits who can spend and how much, but a leaked key is
+- Set a spend cap at your LLM provider as well. This service limits how much can be spent, but a leaked key is
   still a leaked key.
 - Counters reset when the container restarts.

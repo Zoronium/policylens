@@ -105,8 +105,8 @@ export default function Home() {
           <div>
             <h2 id="close-h">Try it on a sample policy</h2>
             <p>
-              Reading a policy spends a paid model, so a public deployment asks for an access code. Estimating a claim
-              does not need one.
+              Reading a policy uses a paid model, so the public demo limits how often it can run. Estimating a claim
+              uses no model.
             </p>
           </div>
           <a className="btn btn-primary btn-lg" href="#/try">

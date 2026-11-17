@@ -2,12 +2,11 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app import access
 from app.config import get_settings
 from app.db import Policy, get_session
 from app.extract import annotate_review, extract_policy
@@ -23,13 +22,11 @@ SAMPLES_DIR = Path(__file__).resolve().parent.parent / "samples"
 WEB_DIST = Path(__file__).resolve().parent.parent / "web" / "dist"
 
 log = logging.getLogger("policylens")
-access.check_config()
 app = FastAPI(title="PolicyLens", version="0.1.0")
 
 
-def guard_llm(request: Request, authorization: str | None = Header(None)):
-    """Everything that can spend the LLM key goes through here: code, per-IP limit, global cap."""
-    access.require_session(authorization)
+def guard_llm(request: Request):
+    """Everything that can spend the LLM key goes through here: per-IP limit, then global cap."""
     s = get_settings()
     limiter.check(f"llm:{client_ip(request)}", s.extractions_per_hour, 3600, "extractions")
     limiter.check("llm:all", s.llm_daily_limit, 86_400, "extractions today (daily cap reached)")
@@ -38,10 +35,6 @@ def guard_llm(request: Request, authorization: str | None = Header(None)):
 def guard_estimate(request: Request):
     # Cheap (no LLM), but still bounded.
     limiter.check(f"est:{client_ip(request)}", 120, 60)
-
-
-class LoginIn(BaseModel):
-    code: str
 
 
 class PolicyOut(BaseModel):
@@ -75,19 +68,7 @@ def _out(row: Policy) -> PolicyOut:
 @app.get("/health")
 def health():
     s = get_settings()
-    return {"ok": True, "llm_configured": bool(s.llm_api_key), "auth_required": bool(s.admin_token)}
-
-
-@app.post("/auth/login")
-def login(body: LoginIn, request: Request):
-    """Trade the current hourly access code for a one-hour session token."""
-    if not get_settings().admin_token:
-        raise HTTPException(404, "Access codes are not enabled on this server.")
-    limiter.check(f"login:{client_ip(request)}", 10, 900, "login attempts")
-    if not access.verify_code(body.code):
-        raise HTTPException(401, "That access code is not valid. Codes change every hour.")
-    token, exp = access.issue_session()
-    return {"token": token, "expires_at": exp}
+    return {"ok": True, "llm_configured": bool(s.llm_api_key)}
 
 
 @app.post(

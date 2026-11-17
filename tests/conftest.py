@@ -49,7 +49,6 @@ def good_reply():
 def _fresh_limits(monkeypatch):
     from app.ratelimit import limiter
 
-    monkeypatch.delenv("ADMIN_TOKEN", raising=False)  # a developer's .env must not leak into tests
     limiter.reset()
     yield
     limiter.reset()
