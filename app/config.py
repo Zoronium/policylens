@@ -28,6 +28,9 @@ class Settings:
     extractions_per_hour: int  # per client IP, on the one endpoint that spends the LLM key
     llm_daily_limit: int  # all clients together, rolling 24 hours: the spend ceiling
     trust_proxy: bool  # read the client IP from X-Forwarded-For (only behind your own proxy)
+    mongodb_uri: str  # set = policies live in MongoDB; empty = SQL via database_url
+    mongodb_db: str
+    clerk_publishable_key: str  # public by design; the API only needs its domain to verify tokens
 
 
 def get_settings() -> Settings:
@@ -41,4 +44,7 @@ def get_settings() -> Settings:
         llm_model=env("LLM_MODEL") or "gpt-4o-mini",
         database_url=env("DATABASE_URL") or "sqlite:///./policylens.db",
         review_threshold=float(env("REVIEW_THRESHOLD") or 0.7),
+        mongodb_uri=env("MONGODB_URI") or "",
+        mongodb_db=env("MONGODB_DB") or "policylens",
+        clerk_publishable_key=env("CLERK_PUBLISHABLE_KEY") or "",
     )

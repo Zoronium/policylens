@@ -54,6 +54,13 @@ def _fresh_limits(monkeypatch):
     limiter.reset()
 
 
+@pytest.fixture(autouse=True)
+def _no_external_services(monkeypatch):
+    """The dev .env may hold a real Mongo URI and Clerk key: tests must never touch either."""
+    monkeypatch.delenv("MONGODB_URI", raising=False)
+    monkeypatch.delenv("CLERK_PUBLISHABLE_KEY", raising=False)
+
+
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 't.db'}")

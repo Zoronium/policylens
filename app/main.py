@@ -5,15 +5,15 @@ from pathlib import Path
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
 
+from app.auth import current_user
 from app.config import get_settings
-from app.db import Policy, get_session
 from app.extract import annotate_review, extract_policy
 from app.llm import LLMError, LLMNotConfigured, get_llm
 from app.pdf import pdf_pages, split_pages
 from app.ratelimit import client_ip, limiter
 from app.schema import PolicyCoverage, iter_cited
+from app.store import PolicyRecord, get_store
 from engine import EngineError, EstimateRequest, EstimateResult, estimate
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -48,7 +48,7 @@ class PolicyOut(BaseModel):
     review_fields: list[str]  # paths of fields flagged "needs human review"
 
 
-def _out(row: Policy) -> PolicyOut:
+def _out(row: PolicyRecord) -> PolicyOut:
     cov = annotate_review(
         PolicyCoverage.model_validate(row.coverage), get_settings().review_threshold
     )
@@ -65,6 +65,21 @@ def _out(row: Policy) -> PolicyOut:
     )
 
 
+class PolicySummary(BaseModel):
+    id: str
+    created_at: datetime
+    source_name: str | None
+    needs_human_review: bool
+
+
+def _load(store, policy_id: str, user: str | None) -> PolicyRecord:
+    """A policy made while signed in belongs to its owner; anyone else gets the same 404."""
+    row = store.get(policy_id)
+    if not row or (row.owner_id and row.owner_id != user):
+        raise HTTPException(404, "Policy not found.")
+    return row
+
+
 @app.get("/health")
 def health():
     s = get_settings()
@@ -77,7 +92,8 @@ def health():
 def create_policy(
     file: UploadFile | None = File(None),
     text: str | None = Form(None),
-    session: Session = Depends(get_session),
+    store=Depends(get_store),
+    user: str | None = Depends(current_user),
 ):
     if bool(file) == bool(text and text.strip()):
         raise HTTPException(
@@ -109,27 +125,44 @@ def create_policy(
         log.warning("LLM request failed: %s", e)  # detail stays in the server log, not the response
         raise HTTPException(502, "The language model request failed. Try again shortly.") from e
 
-    row = Policy(
-        source_name=name, model=llm.model, pages=pages, coverage=coverage.model_dump(mode="json")
+    row = PolicyRecord(
+        source_name=name,
+        model=llm.model,
+        pages=pages,
+        coverage=coverage.model_dump(mode="json"),
+        owner_id=user,
     )
-    session.add(row)
-    session.commit()
+    store.add(row)
     return _out(row)
 
 
 @app.get("/policies/{policy_id}", response_model=PolicyOut)
-def get_policy(policy_id: str, session: Session = Depends(get_session)):
-    row = session.get(Policy, policy_id)
-    if not row:
-        raise HTTPException(404, "Policy not found.")
-    return _out(row)
+def get_policy(
+    policy_id: str, store=Depends(get_store), user: str | None = Depends(current_user)
+):
+    return _out(_load(store, policy_id, user))
+
+
+@app.get("/me/policies", response_model=list[PolicySummary])
+def my_policies(store=Depends(get_store), user: str | None = Depends(current_user)):
+    if not user:
+        raise HTTPException(401, "Sign in to see your saved policies.")
+    return [
+        PolicySummary(
+            id=p.id,
+            created_at=p.created_at,
+            source_name=p.source_name,
+            needs_human_review=_out(p).needs_human_review,
+        )
+        for p in store.by_owner(user)
+    ]
 
 
 @app.post("/estimate", response_model=EstimateResult, dependencies=[Depends(guard_estimate)])
-def post_estimate(req: EstimateRequest, session: Session = Depends(get_session)):
-    row = session.get(Policy, req.policy_id)
-    if not row:
-        raise HTTPException(404, "Policy not found.")
+def post_estimate(
+    req: EstimateRequest, store=Depends(get_store), user: str | None = Depends(current_user)
+):
+    row = _load(store, req.policy_id, user)
     try:
         return estimate(PolicyCoverage.model_validate(row.coverage), req.scenario)
     except EngineError as e:
