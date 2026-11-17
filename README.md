@@ -187,7 +187,7 @@ Pages are hash routes: `#/` home, `#/how` how it works, `#/try` add a policy, `#
 stored policy.
 
 Docker (API and UI in one image; Postgres is optional). The image builds and starts on Coolify; the Postgres profile is
-untested. The app is published on http://localhost:8100 (set `HOST_PORT` to change it):
+untested. The app is published on http://localhost:8100 (`HOST_PORT` changes the host side, `PORT` the container side):
 
 ```bash
 docker compose up --build                       # SQLite

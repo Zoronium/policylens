@@ -1,7 +1,8 @@
 # Deploying PolicyLens on Coolify
 
-PolicyLens ships as one image (API and built UI on port 8000). These steps use Coolify's Dockerfile build pack. (If you use the Docker Compose pack instead, the compose file
-publishes host port 8100, because Coolify's dashboard already holds 8000.)
+PolicyLens ships as one image (API and built UI on port 8100). These steps use Coolify's Dockerfile build pack. (If you use the Docker Compose pack instead, the compose file
+publishes host port 8100, because Coolify's dashboard already holds 8000.) The container listens on `PORT`,
+default 8100.
 Nothing here contains a secret: you paste the values into Coolify yourself.
 
 Status: the image build has not been run end to end on the author's machine (Docker was unavailable). The first
@@ -13,7 +14,7 @@ Coolify build is its first real test. If it fails, the build log names the step;
 2. Repository: `https://github.com/Zoronium/policylens`, branch `main`.
 3. **Build Pack: Dockerfile.** Base directory `/`. Do not use the Docker Compose build pack: the compose file has a
    Postgres profile meant for local use.
-4. **Ports Exposes: `8000`.**
+4. **Ports Exposes: `8100`** (the app listens on `PORT`, default 8100; Coolify's own dashboard holds 8000).
 
 ## 2. Environment variables
 
@@ -47,7 +48,7 @@ in total per day, before getting 429. Set a spend cap at your LLM provider befor
   Atlas answers a blocked IP with a TLS handshake error, not a clear message.
 - **Clerk:** add your domain to the instance's allowed origins, and switch on the sign-in methods you want.
 - **Domains:** set your domain; Coolify issues the certificate.
-- **Health check:** path `/health`, port `8000`.
+- **Health check:** path `/health`, port `8100`.
 - **Replicas: exactly one.** Rate-limit counters live in memory, so a second replica would double every limit.
 
 ## 4. Deploy and check

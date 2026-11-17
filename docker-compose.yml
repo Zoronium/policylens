@@ -5,8 +5,8 @@ services:
   api:
     build: .
     ports:
-      # Host side is 8100, not 8000: Coolify's own dashboard uses 8000. Override with HOST_PORT.
-      - "${HOST_PORT:-8100}:8000"
+      # 8100, not 8000: Coolify's own dashboard uses 8000. PORT sets the container port, HOST_PORT the host side.
+      - "${HOST_PORT:-8100}:${PORT:-8100}"
     env_file:
       - path: .env
         required: false
